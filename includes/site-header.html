@@ -4,26 +4,30 @@
   <div class="wrapper">
     <a class="site-title" href="{{ site.languages.available | where: 'code', current_lang | first | map: 'home_url' | relative_url }}">{{ site.author.name | default: site.title }}</a>
     <nav class="site-nav" aria-label="Main navigation">
-      {% for link in t.navigation.main %}<a class="page-link{% if page.url == link.url %} is-current{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>{% endfor %}
-      {% if site.author.email and site.author.email != '' %}<a class="page-link" href="mailto:{{ site.author.email }}">{{ t.navigation.contact }}</a>{% endif %}
-      {% if site.author.cv and site.author.cv != '' %}<a class="page-link nav-cv" href="{{ site.author.cv | relative_url }}">{{ t.navigation.cv }}</a>{% endif %}
-      <div class="lang-switch">
-        {% for lang in site.languages.available %}
-          {% unless lang.code == current_lang %}
-            {% assign target_url = nil %}
-            {% if page.slug %}
-              {% assign translation = site.pages | where: 'slug', page.slug | where: 'lang', lang.code | first %}
-              {% if translation %}{% assign target_url = translation.url %}{% endif %}
-            {% endif %}
-            {% unless target_url %}{% assign target_url = lang.home_url %}{% endunless %}
-            <a class="page-link lang-link" href="{{ target_url | relative_url }}" title="{{ t.accessibility.language_switch_prefix }} {{ lang.label }}">{{ lang.label }}</a>
-          {% endunless %}
-        {% endfor %}
+      <div class="nav-links">
+        {% for link in t.navigation.main %}<a class="page-link{% if page.url == link.url %} is-current{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>{% endfor %}
+        {% if site.author.email and site.author.email != '' %}<a class="page-link" href="mailto:{{ site.author.email }}">{{ t.navigation.contact }}</a>{% endif %}
+        {% if site.author.cv and site.author.cv != '' %}<a class="page-link nav-cv" href="{{ site.author.cv | relative_url }}">{{ t.navigation.cv }}</a>{% endif %}
       </div>
-      <button type="button" class="theme-toggle" aria-label="{{ t.accessibility.theme_toggle }}">
-        <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-      </button>
+      <div class="nav-utility">
+        <div class="lang-switch">
+          {% for lang in site.languages.available %}
+            {% unless lang.code == current_lang %}
+              {% assign target_url = nil %}
+              {% if page.slug %}
+                {% assign translation = site.pages | where: 'slug', page.slug | where: 'lang', lang.code | first %}
+                {% if translation %}{% assign target_url = translation.url %}{% endif %}
+              {% endif %}
+              {% unless target_url %}{% assign target_url = lang.home_url %}{% endunless %}
+              <a class="page-link lang-link" href="{{ target_url | relative_url }}" title="{{ t.accessibility.language_switch_prefix }} {{ lang.label }}">{{ lang.label }}</a>
+            {% endunless %}
+          {% endfor %}
+        </div>
+        <button type="button" class="theme-toggle" aria-label="{{ t.accessibility.theme_toggle }}">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+      </div>
     </nav>
   </div>
 </header>

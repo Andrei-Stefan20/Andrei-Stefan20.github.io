@@ -4,168 +4,258 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Content editor</title>
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  })();
+</script>
+<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
 <style>
-  :root { --border: #ddd; --muted: #666; --accent: #00008b; }
-  * { box-sizing: border-box; }
-  body { font: 15px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif; max-width: 860px; margin: 30px auto; padding: 0 20px; color: #111; }
-  h1 { font-size: 22px; margin-bottom: 4px; }
-  p.hint { color: var(--muted); margin-top: 0; }
-  fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 18px; }
-  legend { padding: 0 6px; font-weight: 600; }
-  .row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
-  .field { flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px; }
-  label { font-size: 13px; font-weight: 600; }
-  input, select, textarea { font: inherit; padding: 7px 9px; border: 1px solid var(--border); border-radius: 4px; }
-  textarea.excerpt { resize: vertical; min-height: 50px; }
-  [data-type-fields] { display: none; }
-  [data-type-fields].active { display: contents; }
-  .actions { display: flex; gap: 10px; align-items: center; margin: 18px 0; }
-  button { font: inherit; padding: 9px 16px; border-radius: 5px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; }
-  button.secondary { background: #fff; color: var(--accent); }
-  #filename { font: 13px "SFMono-Regular", Consolas, monospace; color: var(--muted); }
-  #output { width: 100%; min-height: 160px; font: 13px "SFMono-Regular", Consolas, monospace; white-space: pre; }
+  body { background: var(--bg); }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 30px; }
 
-  /* Self-contained toolbar icons: EasyMDE's default icon font (Font Awesome,
-     auto-loaded from an unreliable CDN) is replaced with plain symbols so the
-     toolbar always renders, offline and online alike. */
-  .editor-toolbar button i { font-family: inherit !important; font-style: normal !important; color: #444 !important; }
+  .tool-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--border); padding: 26px 0; }
+  .tool-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 3px; }
+  .tool-header p { color: var(--muted); font-size: 14px; margin: 0; }
+  .tool-header code { font: 13px var(--mono); background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+
+  .editor-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; align-items: start; padding: 32px 0 60px; }
+
+  .form-section { margin-bottom: 34px; }
+  .form-section h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 9px; margin-bottom: 16px; }
+
+  .row { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+  .row:last-child { margin-bottom: 0; }
+  .field { flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px; }
+  label { font-size: 13px; font-weight: 600; color: var(--fg-soft); }
+
+  input, select, textarea {
+    font: 14px/1.4 var(--sans); padding: 8px 10px; border: 1px solid var(--border); border-radius: 5px;
+    background: var(--bg); color: var(--fg); transition: border-color .15s ease;
+  }
+  input:focus, select:focus, textarea:focus, input:focus-visible, select:focus-visible {
+    outline: none; border-color: var(--accent);
+  }
+  textarea.excerpt { resize: vertical; min-height: 54px; font-family: var(--sans); }
+
+  [data-type-fields] { display: none; }
+  [data-type-fields].active { display: flex; }
+  .form-section[data-type-fields].active { display: block; }
+
+  #body-field { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+
+  .output-panel { position: sticky; top: 24px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg); }
+  .output-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--code-bg); }
+  #filename { font: 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+  #filename:empty::before { content: "entries/…"; opacity: .5; }
+  .output-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  button { font: 13px var(--sans); font-weight: 600; padding: 7px 14px; border-radius: 5px; border: 1px solid var(--accent); background: var(--accent); color: var(--invert-fg); cursor: pointer; transition: opacity .15s ease; }
+  button:hover { opacity: .85; }
+  button.secondary { background: transparent; color: var(--accent); }
+  button.secondary:hover { background: var(--code-bg); opacity: 1; }
+
+  #output { display: block; width: 100%; max-height: calc(100vh - 160px); overflow: auto; margin: 0; padding: 16px; font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; color: var(--fg); background: var(--bg); }
+
+  /* EasyMDE, restyled to match the site's tokens instead of its defaults */
+  .editor-toolbar { border: none; border-bottom: 1px solid var(--border); background: var(--code-bg); border-radius: 0; opacity: 1; }
+  .editor-toolbar button { color: var(--fg-soft); background: transparent; border-radius: 4px; }
+  .editor-toolbar button:hover, .editor-toolbar button.active { background: var(--border); color: var(--fg); }
+  .editor-toolbar i.separator { border-color: var(--border); }
+  .editor-toolbar button i { font-family: inherit !important; font-style: normal !important; color: inherit !important; }
   .editor-toolbar button i::before { font-family: inherit !important; }
+  /* Letterform icons for text formatting -- a clear, common convention. */
   .editor-toolbar .bold i::before { content: "B" !important; font-weight: 700 !important; }
   .editor-toolbar .italic i::before { content: "I" !important; font-style: italic !important; }
   .editor-toolbar .heading i::before { content: "H" !important; font-weight: 700 !important; }
-  .editor-toolbar .quote i::before { content: "\201C" !important; }
-  .editor-toolbar .unordered-list i::before { content: "\2022\2261" !important; }
-  .editor-toolbar .ordered-list i::before { content: "1.\2261" !important; }
-  .editor-toolbar .check-list i::before { content: "\2611" !important; }
-  .editor-toolbar .link i::before { content: "\1F517" !important; }
-  .editor-toolbar .image i::before { content: "\1F5BC" !important; }
-  .editor-toolbar .code i::before { content: "</>" !important; }
-  .editor-toolbar .table i::before { content: "\2637" !important; }
-  .editor-toolbar .horizontal-rule i::before { content: "\2014" !important; }
-  .editor-toolbar .preview i::before { content: "\1F441" !important; }
-  .editor-toolbar .side-by-side i::before { content: "\21C4" !important; }
-  .editor-toolbar .fullscreen i::before { content: "\26F6" !important; }
-  .editor-toolbar .guide i::before { content: "?" !important; }
-  .editor-toolbar .undo i::before { content: "\21B6" !important; }
-  .editor-toolbar .redo i::before { content: "\21B7" !important; }
+  .editor-toolbar .ordered-list i::before { content: "1." !important; font: 700 11px var(--mono) !important; }
+
+  /* Everything else: monoline SVG icons (same visual language as the theme
+     toggle), applied as a CSS mask so they tint with currentColor in both
+     themes without any external icon font. */
+  .editor-toolbar .quote i,
+  .editor-toolbar .unordered-list i,
+  .editor-toolbar .check-list i,
+  .editor-toolbar .link i,
+  .editor-toolbar .image i,
+  .editor-toolbar .table i,
+  .editor-toolbar .horizontal-rule i,
+  .editor-toolbar .preview i,
+  .editor-toolbar .side-by-side i,
+  .editor-toolbar .fullscreen i,
+  .editor-toolbar .guide i,
+  .editor-toolbar .undo i,
+  .editor-toolbar .redo i {
+    display: inline-block; width: 15px; height: 15px; vertical-align: middle;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    -webkit-mask-size: contain; mask-size: contain;
+  }
+  .editor-toolbar .quote i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8c-2.2 0-4 1.8-4 4v5h5v-5H6c0-1.7.8-2.8 2.5-3.4L7 8z"/><path d="M17 8c-2.2 0-4 1.8-4 4v5h5v-5h-2c0-1.7.8-2.8 2.5-3.4L17 8z"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8c-2.2 0-4 1.8-4 4v5h5v-5H6c0-1.7.8-2.8 2.5-3.4L7 8z"/><path d="M17 8c-2.2 0-4 1.8-4 4v5h5v-5h-2c0-1.7.8-2.8 2.5-3.4L17 8z"/></svg>'); }
+  .editor-toolbar .unordered-list i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>'); }
+  .editor-toolbar .check-list i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'); }
+  .editor-toolbar .link i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'); }
+  .editor-toolbar .image i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'); }
+  .editor-toolbar .table i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'); }
+  .editor-toolbar .horizontal-rule i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>'); }
+  .editor-toolbar .preview i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'); }
+  .editor-toolbar .side-by-side i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg>'); }
+  .editor-toolbar .fullscreen i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>'); }
+  .editor-toolbar .guide i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'); }
+  .editor-toolbar .undo i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>'); }
+  .editor-toolbar .redo i { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>'); mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>'); }
+  .CodeMirror { border: none; background: var(--bg); color: var(--fg); font: 14px/1.6 var(--mono); }
+  .CodeMirror-cursor { border-left-color: var(--fg); }
+  .cm-s-easymde .cm-header { color: var(--fg); }
+  .cm-s-easymde .cm-link, .cm-s-easymde .cm-url { color: var(--accent); }
+  .editor-preview, .editor-preview-side { background: var(--bg); color: var(--fg); }
+  .editor-statusbar { color: var(--muted); border-top: 1px solid var(--border); }
+
+  @media (max-width: 900px) {
+    .editor-layout { grid-template-columns: 1fr; }
+    .output-panel { position: static; }
+    #output { max-height: 320px; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Content editor</h1>
-<p class="hint">Fills the front matter for a project or article and edits the body with a markdown toolbar. Generates a file ready to drop into <code>entries/</code>.</p>
+<header class="tool-header container">
+  <div>
+    <h1>Content editor</h1>
+    <p>Fill in the fields, write the body, then copy or download the file for <code>entries/</code>.</p>
+  </div>
+  <button type="button" class="theme-toggle" aria-label="Switch between light and dark theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+  </button>
+</header>
 
-<fieldset>
-  <legend>Type &amp; language</legend>
-  <div class="row">
-    <div class="field">
-      <label for="type">Type</label>
-      <select id="type">
-        <option value="project">Project</option>
-        <option value="article">Article</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="lang">Language</label>
-      <select id="lang">
-        <option value="en">EN (default)</option>
-        <option value="it">IT</option>
-      </select>
-    </div>
-  </div>
-</fieldset>
+<main class="container editor-layout">
+  <div>
+    <section class="form-section" aria-labelledby="h-type">
+      <h2 id="h-type">Type &amp; language</h2>
+      <div class="row">
+        <div class="field">
+          <label for="type">Type</label>
+          <select id="type">
+            <option value="project">Project</option>
+            <option value="article">Article</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="lang">Language</label>
+          <select id="lang">
+            <option value="en">EN (default)</option>
+            <option value="it">IT</option>
+          </select>
+        </div>
+      </div>
+    </section>
 
-<fieldset>
-  <legend>Common fields</legend>
-  <div class="row">
-    <div class="field">
-      <label for="title">Title</label>
-      <input id="title" type="text" placeholder="Project or article title">
-    </div>
-    <div class="field">
-      <label for="slug">Slug (shared across translations)</label>
-      <input id="slug" type="text" placeholder="my-project">
-    </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label for="date">Date</label>
-      <input id="date" type="date">
-    </div>
-    <div class="field" data-type-fields data-type="project">
-      <label for="year">Year</label>
-      <input id="year" type="number" placeholder="2026">
-    </div>
-    <div class="field" data-type-fields data-type="article">
-      <label for="read_time">Read time (min)</label>
-      <input id="read_time" type="number" placeholder="6">
-    </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label for="excerpt">Excerpt</label>
-      <textarea id="excerpt" class="excerpt" placeholder="Short summary shown in lists."></textarea>
-    </div>
-  </div>
-</fieldset>
+    <section class="form-section" aria-labelledby="h-content">
+      <h2 id="h-content">Content</h2>
+      <div class="row">
+        <div class="field">
+          <label for="title">Title</label>
+          <input id="title" type="text" placeholder="Project or article title">
+        </div>
+        <div class="field">
+          <label for="slug">Slug (shared across translations)</label>
+          <input id="slug" type="text" placeholder="my-project">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="date">Date</label>
+          <input id="date" type="date">
+        </div>
+        <div class="field" data-type-fields data-type="project">
+          <label for="year">Year</label>
+          <input id="year" type="number" placeholder="2026">
+        </div>
+        <div class="field" data-type-fields data-type="article">
+          <label for="read_time">Read time (min)</label>
+          <input id="read_time" type="number" placeholder="6">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="excerpt">Excerpt</label>
+          <textarea id="excerpt" class="excerpt" placeholder="Short summary shown in lists."></textarea>
+        </div>
+      </div>
+    </section>
 
-<fieldset data-type-fields data-type="project">
-  <legend>Project fields</legend>
-  <div class="row">
-    <div class="field">
-      <label for="role">Role</label>
-      <input id="role" type="text" placeholder="Full-Stack Development">
-    </div>
-    <div class="field">
-      <label for="image">Image path</label>
-      <input id="image" type="text" placeholder="/images/project.png">
-    </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label for="technologies">Technologies (comma separated)</label>
-      <input id="technologies" type="text" placeholder="Python, FastAPI, React">
-    </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label for="code">Code URL</label>
-      <input id="code" type="text" placeholder="https://github.com/username/project">
-    </div>
-    <div class="field">
-      <label for="demo">Demo URL</label>
-      <input id="demo" type="text" placeholder="https://example.com">
-    </div>
-    <div class="field">
-      <label for="paper">Paper URL</label>
-      <input id="paper" type="text" placeholder="">
-    </div>
-  </div>
-</fieldset>
+    <section class="form-section" data-type-fields data-type="project" aria-labelledby="h-project">
+      <h2 id="h-project">Project fields</h2>
+      <div class="row">
+        <div class="field">
+          <label for="role">Role</label>
+          <input id="role" type="text" placeholder="Full-Stack Development">
+        </div>
+        <div class="field">
+          <label for="image">Image path</label>
+          <input id="image" type="text" placeholder="/images/project.png">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="technologies">Technologies (comma separated)</label>
+          <input id="technologies" type="text" placeholder="Python, FastAPI, React">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="code">Code URL</label>
+          <input id="code" type="text" placeholder="https://github.com/username/project">
+        </div>
+        <div class="field">
+          <label for="demo">Demo URL</label>
+          <input id="demo" type="text" placeholder="https://example.com">
+        </div>
+        <div class="field">
+          <label for="paper">Paper URL</label>
+          <input id="paper" type="text" placeholder="">
+        </div>
+      </div>
+    </section>
 
-<fieldset data-type-fields data-type="article">
-  <legend>Article fields</legend>
-  <div class="row">
-    <div class="field">
-      <label for="category">Category</label>
-      <input id="category" type="text" placeholder="Artificial Intelligence">
-    </div>
+    <section class="form-section" data-type-fields data-type="article" aria-labelledby="h-article">
+      <h2 id="h-article">Article fields</h2>
+      <div class="row">
+        <div class="field">
+          <label for="category">Category</label>
+          <input id="category" type="text" placeholder="Artificial Intelligence">
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" aria-labelledby="h-body">
+      <h2 id="h-body">Body</h2>
+      <div id="body-field">
+        <textarea id="body"></textarea>
+      </div>
+    </section>
   </div>
-</fieldset>
 
-<fieldset>
-  <legend>Body</legend>
-  <textarea id="body"></textarea>
-</fieldset>
-
-<div class="actions">
-  <button id="generate">Generate file</button>
-  <button id="download" class="secondary">Download .md</button>
-  <span id="filename"></span>
-</div>
-
-<textarea id="output" readonly></textarea>
+  <aside class="output-panel">
+    <div class="output-head">
+      <span id="filename"></span>
+      <div class="output-actions">
+        <button id="copy" class="secondary" type="button">Copy</button>
+        <button id="download" type="button">Download</button>
+      </div>
+    </div>
+    <pre id="output"></pre>
+  </aside>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 <script>
@@ -173,11 +263,17 @@
     element: document.getElementById('body'),
     spellChecker: false,
     status: ['lines', 'words'],
-    placeholder: 'Write the content in Markdown...'
+    placeholder: 'Write the content in Markdown...',
+    autofocus: false
   });
 
   const typeSelect = document.getElementById('type');
   const langSelect = document.getElementById('lang');
+  const dateField = document.getElementById('date');
+  const output = document.getElementById('output');
+  const filenameEl = document.getElementById('filename');
+
+  dateField.value = new Date().toISOString().slice(0, 10);
 
   function syncTypeFields() {
     const type = typeSelect.value;
@@ -185,7 +281,7 @@
       el.classList.toggle('active', el.dataset.type === type);
     });
   }
-  typeSelect.addEventListener('change', syncTypeFields);
+  typeSelect.addEventListener('change', () => { syncTypeFields(); generate(); });
   syncTypeFields();
 
   document.getElementById('title').addEventListener('blur', () => {
@@ -197,6 +293,7 @@
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
+    generate();
   });
 
   function yamlString(value) {
@@ -208,7 +305,7 @@
     const lang = langSelect.value;
     const slug = document.getElementById('slug').value.trim();
     const title = document.getElementById('title').value.trim();
-    const date = document.getElementById('date').value || new Date().toISOString().slice(0, 10);
+    const date = dateField.value || new Date().toISOString().slice(0, 10);
     const excerpt = document.getElementById('excerpt').value.trim();
     const prefix = lang === 'en' ? '' : lang + '/';
     const permalink = `/${prefix}entries/${slug}/`;
@@ -258,27 +355,63 @@
   function generate() {
     const { frontMatter, slug, lang } = buildFrontMatter();
     const body = mde.value().trim();
-    const output = `${frontMatter}\n\n${body}\n`;
-    document.getElementById('output').value = output;
-    document.getElementById('filename').textContent = slug
-      ? `entries/${currentFilename(slug, lang)}`
-      : '';
-    return output;
+    output.textContent = `${frontMatter}\n\n${body}\n`;
+    filenameEl.textContent = slug ? `entries/${currentFilename(slug, lang)}` : '';
+    return output.textContent;
   }
 
-  document.getElementById('generate').addEventListener('click', generate);
+  let debounceHandle;
+  function scheduleGenerate() {
+    clearTimeout(debounceHandle);
+    debounceHandle = setTimeout(generate, 120);
+  }
+
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', scheduleGenerate);
+    el.addEventListener('change', scheduleGenerate);
+  });
+  mde.codemirror.on('change', scheduleGenerate);
+
+  function legacyCopy(text) {
+    const helper = document.createElement('textarea');
+    helper.value = text;
+    helper.style.position = 'fixed';
+    helper.style.opacity = '0';
+    document.body.appendChild(helper);
+    helper.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(helper);
+    return ok;
+  }
+
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    const text = generate();
+    const btn = e.currentTarget;
+    const original = btn.textContent;
+    let ok = true;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      ok = legacyCopy(text);
+    }
+    btn.textContent = ok ? 'Copied' : 'Select the text below';
+    setTimeout(() => { btn.textContent = original; }, 1400);
+  });
 
   document.getElementById('download').addEventListener('click', () => {
-    const output = generate();
+    const text = generate();
     const { slug, lang } = buildFrontMatter();
     if (!slug) { alert('Set a slug first.'); return; }
-    const blob = new Blob([output], { type: 'text/markdown' });
+    const blob = new Blob([text], { type: 'text/markdown' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = currentFilename(slug, lang);
     a.click();
     URL.revokeObjectURL(a.href);
   });
+
+  generate();
 </script>
+<script src="../js/theme.js"></script>
 </body>
 </html>
