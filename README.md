@@ -93,6 +93,10 @@ excerpt: "Short project summary."
 
 The `date` field automatically sets the position on the home page and list pages.
 
+### Editor tool
+
+`tools/write.html` is a standalone page (not part of the built site) that generates these files for you: pick type and language, fill in the fields, write the body with a markdown toolbar, then download the ready-to-use `.md` file and drop it into `entries/`. Open it directly in a browser, no build step required.
+
 ## Adding an article
 
 Create or copy a file into `entries/`:

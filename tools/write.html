@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content editor</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<style>
+  :root { --border: #ddd; --muted: #666; --accent: #00008b; }
+  * { box-sizing: border-box; }
+  body { font: 15px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif; max-width: 860px; margin: 30px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.hint { color: var(--muted); margin-top: 0; }
+  fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 18px; }
+  legend { padding: 0 6px; font-weight: 600; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .field { flex: 1 1 220px; display: flex; flex-direction: column; gap: 4px; }
+  label { font-size: 13px; font-weight: 600; }
+  input, select, textarea { font: inherit; padding: 7px 9px; border: 1px solid var(--border); border-radius: 4px; }
+  textarea.excerpt { resize: vertical; min-height: 50px; }
+  [data-type-fields] { display: none; }
+  [data-type-fields].active { display: contents; }
+  .actions { display: flex; gap: 10px; align-items: center; margin: 18px 0; }
+  button { font: inherit; padding: 9px 16px; border-radius: 5px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: var(--accent); }
+  #filename { font: 13px "SFMono-Regular", Consolas, monospace; color: var(--muted); }
+  #output { width: 100%; min-height: 160px; font: 13px "SFMono-Regular", Consolas, monospace; white-space: pre; }
+
+  /* Self-contained toolbar icons: EasyMDE's default icon font (Font Awesome,
+     auto-loaded from an unreliable CDN) is replaced with plain symbols so the
+     toolbar always renders, offline and online alike. */
+  .editor-toolbar button i { font-family: inherit !important; font-style: normal !important; color: #444 !important; }
+  .editor-toolbar button i::before { font-family: inherit !important; }
+  .editor-toolbar .bold i::before { content: "B" !important; font-weight: 700 !important; }
+  .editor-toolbar .italic i::before { content: "I" !important; font-style: italic !important; }
+  .editor-toolbar .heading i::before { content: "H" !important; font-weight: 700 !important; }
+  .editor-toolbar .quote i::before { content: "\201C" !important; }
+  .editor-toolbar .unordered-list i::before { content: "\2022\2261" !important; }
+  .editor-toolbar .ordered-list i::before { content: "1.\2261" !important; }
+  .editor-toolbar .check-list i::before { content: "\2611" !important; }
+  .editor-toolbar .link i::before { content: "\1F517" !important; }
+  .editor-toolbar .image i::before { content: "\1F5BC" !important; }
+  .editor-toolbar .code i::before { content: "</>" !important; }
+  .editor-toolbar .table i::before { content: "\2637" !important; }
+  .editor-toolbar .horizontal-rule i::before { content: "\2014" !important; }
+  .editor-toolbar .preview i::before { content: "\1F441" !important; }
+  .editor-toolbar .side-by-side i::before { content: "\21C4" !important; }
+  .editor-toolbar .fullscreen i::before { content: "\26F6" !important; }
+  .editor-toolbar .guide i::before { content: "?" !important; }
+  .editor-toolbar .undo i::before { content: "\21B6" !important; }
+  .editor-toolbar .redo i::before { content: "\21B7" !important; }
+</style>
+</head>
+<body>
+
+<h1>Content editor</h1>
+<p class="hint">Fills the front matter for a project or article and edits the body with a markdown toolbar. Generates a file ready to drop into <code>entries/</code>.</p>
+
+<fieldset>
+  <legend>Type &amp; language</legend>
+  <div class="row">
+    <div class="field">
+      <label for="type">Type</label>
+      <select id="type">
+        <option value="project">Project</option>
+        <option value="article">Article</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="lang">Language</label>
+      <select id="lang">
+        <option value="en">EN (default)</option>
+        <option value="it">IT</option>
+      </select>
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Common fields</legend>
+  <div class="row">
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" type="text" placeholder="Project or article title">
+    </div>
+    <div class="field">
+      <label for="slug">Slug (shared across translations)</label>
+      <input id="slug" type="text" placeholder="my-project">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label for="date">Date</label>
+      <input id="date" type="date">
+    </div>
+    <div class="field" data-type-fields data-type="project">
+      <label for="year">Year</label>
+      <input id="year" type="number" placeholder="2026">
+    </div>
+    <div class="field" data-type-fields data-type="article">
+      <label for="read_time">Read time (min)</label>
+      <input id="read_time" type="number" placeholder="6">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label for="excerpt">Excerpt</label>
+      <textarea id="excerpt" class="excerpt" placeholder="Short summary shown in lists."></textarea>
+    </div>
+  </div>
+</fieldset>
+
+<fieldset data-type-fields data-type="project">
+  <legend>Project fields</legend>
+  <div class="row">
+    <div class="field">
+      <label for="role">Role</label>
+      <input id="role" type="text" placeholder="Full-Stack Development">
+    </div>
+    <div class="field">
+      <label for="image">Image path</label>
+      <input id="image" type="text" placeholder="/images/project.png">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label for="technologies">Technologies (comma separated)</label>
+      <input id="technologies" type="text" placeholder="Python, FastAPI, React">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label for="code">Code URL</label>
+      <input id="code" type="text" placeholder="https://github.com/username/project">
+    </div>
+    <div class="field">
+      <label for="demo">Demo URL</label>
+      <input id="demo" type="text" placeholder="https://example.com">
+    </div>
+    <div class="field">
+      <label for="paper">Paper URL</label>
+      <input id="paper" type="text" placeholder="">
+    </div>
+  </div>
+</fieldset>
+
+<fieldset data-type-fields data-type="article">
+  <legend>Article fields</legend>
+  <div class="row">
+    <div class="field">
+      <label for="category">Category</label>
+      <input id="category" type="text" placeholder="Artificial Intelligence">
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Body</legend>
+  <textarea id="body"></textarea>
+</fieldset>
+
+<div class="actions">
+  <button id="generate">Generate file</button>
+  <button id="download" class="secondary">Download .md</button>
+  <span id="filename"></span>
+</div>
+
+<textarea id="output" readonly></textarea>
+
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+  const mde = new EasyMDE({
+    element: document.getElementById('body'),
+    spellChecker: false,
+    status: ['lines', 'words'],
+    placeholder: 'Write the content in Markdown...'
+  });
+
+  const typeSelect = document.getElementById('type');
+  const langSelect = document.getElementById('lang');
+
+  function syncTypeFields() {
+    const type = typeSelect.value;
+    document.querySelectorAll('[data-type-fields]').forEach(el => {
+      el.classList.toggle('active', el.dataset.type === type);
+    });
+  }
+  typeSelect.addEventListener('change', syncTypeFields);
+  syncTypeFields();
+
+  document.getElementById('title').addEventListener('blur', () => {
+    const slugField = document.getElementById('slug');
+    if (slugField.value.trim() !== '') return;
+    slugField.value = document.getElementById('title').value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  });
+
+  function yamlString(value) {
+    return '"' + String(value || '').replace(/"/g, '\\"') + '"';
+  }
+
+  function buildFrontMatter() {
+    const type = typeSelect.value;
+    const lang = langSelect.value;
+    const slug = document.getElementById('slug').value.trim();
+    const title = document.getElementById('title').value.trim();
+    const date = document.getElementById('date').value || new Date().toISOString().slice(0, 10);
+    const excerpt = document.getElementById('excerpt').value.trim();
+    const prefix = lang === 'en' ? '' : lang + '/';
+    const permalink = `/${prefix}entries/${slug}/`;
+
+    const lines = ['---'];
+    lines.push(`type: ${type}`);
+    lines.push(`layout: ${type === 'project' ? 'case-study' : 'article'}`);
+    lines.push(`lang: ${lang}`);
+    lines.push(`slug: ${slug}`);
+    lines.push(`permalink: ${permalink}`);
+    lines.push(`title: ${yamlString(title)}`);
+    lines.push(`date: ${date}`);
+
+    if (type === 'project') {
+      const year = document.getElementById('year').value.trim();
+      const role = document.getElementById('role').value.trim();
+      const image = document.getElementById('image').value.trim();
+      const technologies = document.getElementById('technologies').value
+        .split(',').map(s => s.trim()).filter(Boolean);
+      const code = document.getElementById('code').value.trim();
+      const demo = document.getElementById('demo').value.trim();
+      const paper = document.getElementById('paper').value.trim();
+
+      if (year) lines.push(`year: ${year}`);
+      lines.push(`image: ${yamlString(image)}`);
+      lines.push(`role: ${yamlString(role)}`);
+      lines.push(`technologies: [${technologies.join(', ')}]`);
+      lines.push(`code: ${yamlString(code)}`);
+      lines.push(`demo: ${yamlString(demo)}`);
+      lines.push(`paper: ${yamlString(paper)}`);
+    } else {
+      const category = document.getElementById('category').value.trim();
+      const readTime = document.getElementById('read_time').value.trim();
+      lines.push(`category: ${yamlString(category)}`);
+      if (readTime) lines.push(`read_time: ${readTime}`);
+    }
+
+    lines.push(`excerpt: ${yamlString(excerpt)}`);
+    lines.push('---');
+    return { frontMatter: lines.join('\n'), slug, lang };
+  }
+
+  function currentFilename(slug, lang) {
+    return lang === 'en' ? `${slug}.md` : `${slug}.${lang}.md`;
+  }
+
+  function generate() {
+    const { frontMatter, slug, lang } = buildFrontMatter();
+    const body = mde.value().trim();
+    const output = `${frontMatter}\n\n${body}\n`;
+    document.getElementById('output').value = output;
+    document.getElementById('filename').textContent = slug
+      ? `entries/${currentFilename(slug, lang)}`
+      : '';
+    return output;
+  }
+
+  document.getElementById('generate').addEventListener('click', generate);
+
+  document.getElementById('download').addEventListener('click', () => {
+    const output = generate();
+    const { slug, lang } = buildFrontMatter();
+    if (!slug) { alert('Set a slug first.'); return; }
+    const blob = new Blob([output], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = currentFilename(slug, lang);
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+</body>
+</html>

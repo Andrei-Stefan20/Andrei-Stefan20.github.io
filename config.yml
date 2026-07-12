@@ -61,3 +61,4 @@ exclude:
   - includes
   - data
   - entries/README.md
+  - tools
