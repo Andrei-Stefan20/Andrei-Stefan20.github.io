@@ -10,10 +10,6 @@ navigation:
       url: "/it/writing/"
     - title: "Archivio"
       url: "/it/archive/"
-    - title: "Argomenti"
-      url: "/it/topics/"
-    - title: "Cerca"
-      url: "/it/search/"
   contact: "Contatti"
   cv: "CV"
 
@@ -54,6 +50,7 @@ work:
   demo_label: "Demo live ↗"
   paper_label: "Paper ↗"
   project_label: "Progetto"
+  empty: "Nessun progetto pubblicato ancora."
 
 writing:
   title: "Scritti"
@@ -68,14 +65,10 @@ archive:
   empty: "Nessun articolo pubblicato ancora."
   article_label: "Articolo"
 
-topics:
-  title: "Argomenti"
-  intro: "Articoli raggruppati per argomento."
-  count_label: "ARGOMENTI"
-
 search:
   title: "Cerca"
   intro: "Cerca progetti e articoli."
+  topics_title: "Sfoglia per argomento"
 
 content:
   case_study_label: "CASE STUDY"

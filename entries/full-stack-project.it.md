@@ -7,7 +7,6 @@ permalink: /it/entries/full-stack-project/
 title: "Titolo del progetto"
 date: 2025-06-10
 year: 2025
-image: ""
 role: "Sviluppo Full-Stack"
 technologies: [Python, FastAPI, React]
 code: "https://github.com/Andrei-Stefan20/project"

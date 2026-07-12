@@ -46,12 +46,12 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .site-nav { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .nav-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .nav-utility { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-.nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--border); border-radius: 50%; background: var(--bg); color: var(--fg-soft); cursor: pointer; }
+.nav-toggle { display: none; position: relative; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--border); border-radius: 50%; background: var(--bg); color: var(--fg-soft); cursor: pointer; transition: border-color .15s ease, color .15s ease; }
 .nav-toggle:hover, .nav-toggle:focus-visible { border-color: var(--accent); color: var(--accent); }
-.nav-toggle svg { display: block; }
-.nav-toggle .icon-close { display: none; }
-.nav-toggle.is-open .icon-menu { display: none; }
-.nav-toggle.is-open .icon-close { display: block; }
+.nav-toggle svg { display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(0deg); opacity: 1; transition: opacity .2s ease, transform .25s ease; }
+.nav-toggle .icon-close { opacity: 0; transform: translate(-50%, -50%) rotate(-90deg); }
+.nav-toggle.is-open .icon-menu { opacity: 0; transform: translate(-50%, -50%) rotate(90deg); }
+.nav-toggle.is-open .icon-close { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
 .page-link { color: var(--fg); padding-bottom: 3px; border-bottom: 1px solid transparent; text-decoration: none; transition: color .15s ease, border-color .15s ease; }
 .page-link:hover { color: var(--accent); border-bottom-color: var(--accent); text-decoration: none; }
 .page-link.is-current { color: var(--accent); border-bottom-color: var(--accent); }
@@ -152,6 +152,11 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .article-content pre code { padding: 0; }
 .article-content blockquote { color: var(--muted); border-left: 3px solid var(--border); margin: 25px 0; padding-left: 18px; }
 .comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.topic-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.topic-pill { font: 13px var(--sans); padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--fg-soft); cursor: pointer; transition: border-color .15s ease, color .15s ease; }
+.topic-pill:hover, .topic-pill:focus-visible { border-color: var(--accent); color: var(--accent); }
+.paper-badge { display: inline-block; font: 12px var(--mono); letter-spacing: .03em; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; border-radius: 4px; margin: 6px 0 2px; text-decoration: none !important; }
+.paper-badge:hover { background: var(--accent); color: var(--invert-fg); }
 .about-page .page-intro { max-width: 650px; font-size: 19px; line-height: 1.55; }
 .about-section { margin-top: 42px; }
 .about-section h2 { border-bottom: 1px solid var(--border); padding-bottom: 7px; }
@@ -168,8 +173,13 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
   .site-header .wrapper { flex-wrap: wrap; padding-bottom: 8px; }
   .site-title { line-height: 56px; }
   .nav-toggle { display: inline-flex; }
-  .site-nav { display: none; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding: 10px 0 6px; }
-  .site-nav.is-open { display: flex; }
+  .site-nav {
+    display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%;
+    max-height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0;
+    transform: translateY(-6px);
+    transition: max-height .3s ease, opacity .2s ease, transform .25s ease, padding .3s ease;
+  }
+  .site-nav.is-open { max-height: 420px; opacity: 1; padding: 10px 0 6px; transform: translateY(0); transition-timing-function: ease-out; }
   .nav-links { justify-content: center; gap: 8px 18px; }
   .nav-utility { justify-content: center; }
   .page-content { padding: 30px 0; }

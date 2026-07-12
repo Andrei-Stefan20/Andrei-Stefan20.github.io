@@ -7,7 +7,6 @@ permalink: /entries/research-project/
 title: "Research project title"
 date: 2024-11-20
 year: 2024
-image: ""
 label: "AREA"
 role: "Artificial Intelligence"
 technologies: [PyTorch, LLMs, Knowledge Graphs]

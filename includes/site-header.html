@@ -9,7 +9,15 @@
     </button>
     <nav class="site-nav" id="site-nav" aria-label="Main navigation">
       <div class="nav-links">
-        {% for link in t.navigation.main %}<a class="page-link{% if page.url == link.url %} is-current{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>{% endfor %}
+        {% assign lang_project_count = site.pages | where: 'type', 'project' | where: 'lang', current_lang | size %}
+        {% assign lang_article_count = site.pages | where: 'type', 'article' | where: 'lang', current_lang | size %}
+        {% for link in t.navigation.main %}
+          {% assign hide_link = false %}
+          {% if link.url contains 'work/' and lang_project_count == 0 %}{% assign hide_link = true %}{% endif %}
+          {% if link.url contains 'writing/' and lang_article_count == 0 %}{% assign hide_link = true %}{% endif %}
+          {% if link.url contains 'archive/' and lang_article_count == 0 %}{% assign hide_link = true %}{% endif %}
+          {% unless hide_link %}<a class="page-link{% if page.url == link.url %} is-current{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>{% endunless %}
+        {% endfor %}
         {% if site.author.email and site.author.email != '' %}<a class="page-link" href="mailto:{{ site.author.email }}">{{ t.navigation.contact }}</a>{% endif %}
         {% if site.author.cv and site.author.cv != '' %}<a class="page-link nav-cv" href="{{ site.author.cv | relative_url }}">{{ t.navigation.cv }}</a>{% endif %}
       </div>

@@ -24,8 +24,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
   <link rel="stylesheet" href="{{ '/css/style.css' | relative_url }}">
   <style>:root { --accent-base: {{ site.appearance.accent_color | default: '#00008b' }}; }</style>
-  {% assign seo_image = page.image | default: site.logo %}
-  {% seo image=seo_image %}{% feed_meta %}
+  {% seo %}{% feed_meta %}
+  {% assign share_image = page.image | default: site.logo %}
+  {% if share_image and share_image != '' %}
+  <meta property="og:image" content="{{ share_image | absolute_url }}">
+  <meta name="twitter:image" content="{{ share_image | absolute_url }}">
+  {% endif %}
   {% assign current_home = site.languages.available | where: 'code', current_lang | map: 'home_url' | first %}
   {% assign path_remainder = page.url | remove_first: current_home %}
   {% for lang in site.languages.available %}

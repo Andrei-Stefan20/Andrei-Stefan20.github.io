@@ -10,10 +10,6 @@ navigation:
       url: "/writing/"
     - title: "Archive"
       url: "/archive/"
-    - title: "Topics"
-      url: "/topics/"
-    - title: "Search"
-      url: "/search/"
   contact: "Contact"
   cv: "CV"
 
@@ -54,6 +50,7 @@ work:
   demo_label: "Live demo ↗"
   paper_label: "Paper ↗"
   project_label: "Project"
+  empty: "No projects published yet."
 
 writing:
   title: "Writing"
@@ -68,14 +65,10 @@ archive:
   empty: "No articles published yet."
   article_label: "Article"
 
-topics:
-  title: "Topics"
-  intro: "Articles grouped by topic."
-  count_label: "TOPICS"
-
 search:
   title: "Search"
   intro: "Search projects and articles."
+  topics_title: "Browse by topic"
 
 content:
   case_study_label: "CASE STUDY"

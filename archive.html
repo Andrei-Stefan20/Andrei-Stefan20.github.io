@@ -6,8 +6,35 @@ permalink: /archive/
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
 {% assign articles = site.pages | where: 'lang', current_lang | where: 'type', 'article' | sort: 'date' | reverse %}
+{% assign topics = articles | map: 'category' | uniq | sort %}
 <div class="page-heading"><div><h1 class="page-title">{{ t.archive.title }}</h1><p class="page-intro">{{ t.archive.intro }}</p></div><p class="page-count">{{ articles | size }} {{ t.writing.count_label }}</p></div>
+
 {% if articles.size > 0 %}
+<h2 class="section-title">{{ t.search.title }}</h2>
+<div id="search"></div>
+{% if topics.size > 0 %}
+<div class="topic-list">
+  {% for topic in topics %}<button type="button" class="topic-pill" data-topic="{{ topic | default: t.writing.default_category }}">{{ topic | default: t.writing.default_category }}</button>{% endfor %}
+</div>
+{% endif %}
+<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet">
+<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    if (typeof PagefindUI === 'undefined') return;
+    new PagefindUI({ element: '#search', showSubResults: true });
+    document.querySelectorAll('.topic-pill').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = document.querySelector('#search input');
+        if (!input) return;
+        input.value = btn.dataset.topic;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
+      });
+    });
+  });
+</script>
+
   {% assign current_year = '' %}
   <div class="archive-list">
   {% for article in articles %}
