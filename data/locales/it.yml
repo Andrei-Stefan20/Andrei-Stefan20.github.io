@@ -74,6 +74,7 @@ accessibility:
   project_preview_suffix: "anteprima"
   theme_toggle: "Cambia tra tema chiaro e scuro"
   background_toggle: "Cambia sfondo"
+  font_toggle: "Attiva/disattiva font scritto a mano"
   language_switch_prefix: "Vedi in"
 
 footer:

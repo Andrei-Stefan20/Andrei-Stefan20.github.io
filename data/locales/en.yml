@@ -74,6 +74,7 @@ accessibility:
   project_preview_suffix: "preview"
   theme_toggle: "Switch between light and dark theme"
   background_toggle: "Change background pattern"
+  font_toggle: "Toggle handwritten font"
   language_switch_prefix: "View in"
 
 footer:
