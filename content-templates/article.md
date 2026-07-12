@@ -1,6 +1,9 @@
 ---
 type: article
 layout: article
+lang: en
+slug: article-slug
+permalink: /entries/article-slug/
 title: "Article title"
 date: 2026-01-15
 category: "Artificial Intelligence"

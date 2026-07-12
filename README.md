@@ -1,36 +1,64 @@
-# Minimal Academic Portfolio
-
-Template Jekyll minimale per portfolio accademici e professionali, ispirato all'architettura modulare di Academic Pages ma con un'interfaccia più semplice.
+# Simple Template
 
 ## Avvio rapido
 
 1. Premi **Use this template → Create a new repository**.
 2. Nomina la repository `tuo-username.github.io`.
 3. Modifica `_config.yml` con identità, contatti, URL e profili.
-4. Modifica `_data/interface.yml` per cambiare ogni etichetta visibile.
+4. Modifica `data/locales/en.yml` (e `data/locales/it.yml`) per cambiare ogni etichetta visibile, la navigazione e il testo "About".
 5. Esegui `ruby scripts/sync_repository.rb` per aggiornare licenza, sicurezza, robots e link della repository.
-6. Modifica `_data/navigation.yml` per scegliere le sezioni visibili.
+6. In `data/locales/<lingua>.yml`, dentro `navigation.main`, scegli quali sezioni mostrare.
 7. In **Settings → Pages → Source** seleziona **GitHub Actions**.
 
 ## Dove si personalizza
 
 | Elemento | File/cartella |
 |---|---|
-| Nome, bio, email, social, SEO e colore | `_config.yml` |
-| Ogni titolo, pulsante ed etichetta | `_data/interface.yml` |
-| Menu e ordine delle pagine | `_data/navigation.yml` |
+| Nome, email, social, SEO, colore e lingue attive | `_config.yml` |
+| Etichette, menu e testo "About" per ogni lingua | `data/locales/en.yml`, `data/locales/it.yml` |
 | Tutti i progetti e articoli | `_entries/*.md` |
-| Pubblicazioni | `_publications/*.md` |
-| Talk | `_talks/*.md` |
-| Insegnamento | `_teaching/*.md` |
-| Righe progetto/articolo | `_includes/work-entry.html`, `_includes/writing-entry.html` |
-| Header e footer | `_includes/site-header.html`, `_includes/site-footer.html` |
-| Struttura generale | `_layouts/site.html` |
-| Case study e articoli | `_layouts/case-study.html`, `_layouts/article.html` |
+| Righe progetto/articolo | `includes/work-entry.html`, `includes/writing-entry.html` |
+| Header e footer | `includes/site-header.html`, `includes/site-footer.html` |
+| Struttura generale | `layouts/site.html` |
+| Case study e articoli | `layouts/case-study.html`, `layouts/article.html` |
 | Stile e responsive | `css/style.css` |
 | Foto, anteprime e allegati | `images/` e `files/` |
 
-Le sezioni Publications, Talks e Teaching sono già pronte ma nascoste. Per mostrarle, rimuovi `#` dalle relative righe in `_data/navigation.yml`.
+## Multi-lingua
+
+Il sito supporta più lingue con URL separati: l'inglese resta sulla root (`/`, `/work/`, ecc.) mentre le altre lingue vivono in una sottocartella (es. `/it/`, `/it/work/`). La lingua di default e quelle disponibili si configurano in `_config.yml`:
+
+```yaml
+languages:
+  default: en
+  available:
+    - code: en
+      label: "EN"
+      home_url: "/"
+    - code: it
+      label: "IT"
+      home_url: "/it/"
+```
+
+- **Etichette e testi fissi**: un file per lingua in `data/locales/<codice>.yml` (navigazione, testo "About", etichette dei bottoni, ecc.).
+- **Pagine di sezione**: la lingua di default usa le pagine alla radice (`index.html`, `work.html`, `writing.html`, `archive.html`, `about.html`). Ogni altra lingua ha le sue pagine in una cartella `<codice>/` (es. `it/index.html`) con lo stesso contenuto Liquid ma `lang: <codice>` e `permalink: /<codice>/...` nel front matter.
+- **Progetti e articoli**: ogni file in `_entries/` ha un campo `lang` (es. `lang: en`, `lang: it`) e uno `slug` condiviso tra le traduzioni dello stesso contenuto. La traduzione in una lingua diversa dal default si chiama `nome-file.<codice>.md` e ha un `permalink` esplicito, es.:
+
+```yaml
+---
+type: project
+layout: case-study
+lang: it
+slug: full-stack-project
+permalink: /it/entries/full-stack-project/
+title: "Titolo del progetto"
+...
+---
+```
+
+Se un contenuto non ha una traduzione in una lingua, semplicemente non compare nelle liste di quella lingua. Il pulsante di cambio lingua nell'header porta alla traduzione esatta della pagina se esiste (stesso `slug`), altrimenti alla home di quella lingua.
+
+Per aggiungere una terza lingua: aggiungi la voce in `languages.available`, crea `data/locales/<codice>.yml`, crea le pagine `<codice>/index.html`, `<codice>/about.html`, `<codice>/work.html`, `<codice>/writing.html`, `<codice>/archive.html` copiando quelle esistenti, e aggiungi `<codice>.md` per ogni contenuto tradotto in `_entries/`.
 
 ## Aggiungere progetti e articoli
 
@@ -48,6 +76,8 @@ Progetto:
 title: "Project title"
 type: project
 layout: case-study
+lang: en
+slug: project-slug
 date: 2025-01-15
 year: 2025
 image: "/images/project.png"
@@ -70,6 +100,8 @@ Crea o copia un file dentro `_entries/`:
 title: "Article title"
 type: article
 layout: article
+lang: en
+slug: article-slug
 date: 2025-01-15
 category: "Artificial Intelligence"
 read_time: 6

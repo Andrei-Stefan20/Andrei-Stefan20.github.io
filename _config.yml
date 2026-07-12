@@ -25,54 +25,23 @@ author:
   scholar: ""
   orcid: ""
 
-about:
-  - "I'm a Full-Stack Developer and Master's student in Artificial Intelligence at the University of Bari."
-  - "My work spans software engineering, machine learning, and AI research. I'm particularly interested in large language models, knowledge graphs, and building reliable software systems."
-  - "Here you'll find a selection of the projects I've worked on throughout my academic and professional career."
-
-about_page:
-  title: "About me"
-  intro: "I build software and study artificial intelligence, with a focus on practical systems that are clear, reliable, and useful."
-  sections:
-    - title: "Background"
-      paragraphs:
-        - "I am a Full-Stack Developer and a Master's student in Artificial Intelligence at the University of Bari. My academic path combines computer science foundations with the study of modern AI systems."
-        - "I enjoy moving between theory and implementation: understanding a problem deeply, designing a clear solution, and turning it into software that people can use."
-    - title: "What I work on"
-      paragraphs:
-        - "My interests include software engineering, machine learning, large language models, and knowledge graphs. I am especially interested in how these technologies can be assembled into reliable, understandable products."
-        - "Through academic and personal projects, I work with backend services, web applications, data pipelines, and AI-powered features."
-    - title: "How I approach projects"
-      paragraphs:
-        - "I value simple interfaces, maintainable code, and measurable results. I prefer starting from the real user or research problem, then choosing the smallest technical solution that solves it well."
+languages:
+  default: en
+  available:
+    - code: en
+      label: "EN"
+      home_url: "/"
+    - code: it
+      label: "IT"
+      home_url: "/it/"
 
 appearance:
   accent_color: "#00008b"
   recent_items_on_home: 5
 
-collections:
-  entries:
-    output: true
-    permalink: /entries/:name/
-  publications:
-    output: true
-    permalink: /publications/:name/
-  talks:
-    output: true
-    permalink: /talks/:name/
-  teaching:
-    output: true
-    permalink: /teaching/:name/
-
-defaults:
-  - scope: { path: "", type: "entries" }
-    values: { layout: "profile-entry" }
-  - scope: { path: "", type: "publications" }
-    values: { layout: "profile-entry" }
-  - scope: { path: "", type: "talks" }
-    values: { layout: "profile-entry" }
-  - scope: { path: "", type: "teaching" }
-    values: { layout: "profile-entry" }
+layouts_dir: layouts
+includes_dir: includes
+data_dir: data
 
 plugins:
   - jekyll-feed
@@ -89,3 +58,7 @@ exclude:
   - Gemfile.lock
   - vendor
   - content-templates
+  - layouts
+  - includes
+  - data
+  - entries/README.md

@@ -1,0 +1,90 @@
+# Stringhe italiane. Ogni etichetta fissa, la navigazione e il testo "About" vivono qui.
+navigation:
+  main:
+    - title: "Home"
+      url: "/it/"
+    - title: "Chi sono"
+      url: "/it/about/"
+    - title: "Progetti"
+      url: "/it/work/"
+    - title: "Scritti"
+      url: "/it/writing/"
+    - title: "Archivio"
+      url: "/it/archive/"
+  contact: "Contatti"
+  cv: "CV"
+
+about:
+  - "Sono un Full-Stack Developer e studente magistrale in Intelligenza Artificiale all'Università di Bari."
+  - "Il mio lavoro spazia tra ingegneria del software, machine learning e ricerca sull'IA. Mi interessano in particolare i modelli linguistici di grandi dimensioni, i knowledge graph e la costruzione di sistemi software affidabili."
+  - "Qui trovi una selezione dei progetti a cui ho lavorato durante il mio percorso accademico e professionale."
+
+about_page:
+  title: "Chi sono"
+  intro: "Costruisco software e studio intelligenza artificiale, con un'attenzione particolare a sistemi pratici che siano chiari, affidabili e utili."
+  sections:
+    - title: "Percorso"
+      paragraphs:
+        - "Sono un Full-Stack Developer e studente magistrale in Intelligenza Artificiale all'Università di Bari. Il mio percorso accademico unisce le basi dell'informatica allo studio dei moderni sistemi di IA."
+        - "Mi piace muovermi tra teoria e implementazione: capire un problema a fondo, progettare una soluzione chiara e trasformarla in software utilizzabile."
+    - title: "Di cosa mi occupo"
+      paragraphs:
+        - "I miei interessi includono ingegneria del software, machine learning, modelli linguistici di grandi dimensioni e knowledge graph. Mi interessa in particolare come queste tecnologie possano diventare prodotti affidabili e comprensibili."
+        - "Attraverso progetti accademici e personali lavoro con servizi backend, applicazioni web, pipeline di dati e funzionalità basate sull'IA."
+    - title: "Come affronto i progetti"
+      paragraphs:
+        - "Valorizzo interfacce semplici, codice manutenibile e risultati misurabili. Preferisco partire dal problema reale dell'utente o della ricerca, scegliendo poi la soluzione tecnica più piccola che lo risolve bene."
+
+home:
+  about_title: "Chi sono"
+  recent_title: "Ultimi progetti e articoli"
+  recent_intro: "I progetti e gli articoli più recenti, in ordine di data."
+  archive_link: "Vai all'archivio →"
+  archive_url: "/it/archive/"
+
+work:
+  title: "Progetti"
+  intro: "Lavori accademici e professionali selezionati."
+  count_label: "PROGETTI"
+  default_role_label: "RUOLO"
+  code_label: "Codice ↗"
+  demo_label: "Demo live ↗"
+  paper_label: "Paper ↗"
+  project_label: "Progetto"
+
+writing:
+  title: "Scritti"
+  intro: "Note su intelligenza artificiale e ingegneria del software."
+  count_label: "ARTICOLI"
+  default_category: "Note"
+  read_suffix: "min"
+
+archive:
+  title: "Archivio articoli"
+  intro: "Tutti gli articoli in ordine cronologico inverso."
+  empty: "Nessun articolo pubblicato ancora."
+  article_label: "Articolo"
+
+content:
+  case_study_label: "CASE STUDY"
+  writing_label: "Scritti"
+  read_aria_prefix: "Leggi"
+
+accessibility:
+  profile_photo_suffix: "foto profilo"
+  project_preview_suffix: "anteprima"
+  theme_toggle: "Cambia tra tema chiaro e scuro"
+  language_switch_prefix: "Vedi in"
+
+footer:
+  github: "GitHub"
+  linkedin: "LinkedIn"
+  scholar: "Google Scholar"
+  orcid: "ORCID"
+  copyright_symbol: "©"
+
+errors:
+  not_found_code: "ERRORE 404"
+  not_found_title: "Pagina non trovata."
+  not_found_text: "Il contenuto potrebbe essere stato spostato o rimosso."
+  home_link: "← Torna alla home"

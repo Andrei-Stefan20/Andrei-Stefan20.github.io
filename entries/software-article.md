@@ -1,6 +1,9 @@
 ---
 type: article
 layout: article
+lang: en
+slug: software-article
+permalink: /entries/software-article/
 title: "Article title about reliable software systems"
 date: 2024-09-12
 category: "Software Engineering"

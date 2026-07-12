@@ -1,6 +1,9 @@
 ---
 type: article
 layout: article
+lang: en
+slug: llm-article
+permalink: /entries/llm-article/
 title: "Article title about large language models"
 date: 2025-05-01
 category: "Artificial Intelligence"

@@ -1,6 +1,9 @@
 ---
 type: project
 layout: case-study
+lang: en
+slug: full-stack-project
+permalink: /entries/full-stack-project/
 title: "Project title"
 date: 2025-06-10
 year: 2025

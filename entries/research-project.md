@@ -1,6 +1,9 @@
 ---
 type: project
 layout: case-study
+lang: en
+slug: research-project
+permalink: /entries/research-project/
 title: "Research project title"
 date: 2024-11-20
 year: 2024
