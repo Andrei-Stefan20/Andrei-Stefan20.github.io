@@ -35,7 +35,7 @@ languages:
       home_url: "/it/"
 
 appearance:
-  accent_color: "#00008b"
+  accent_color: "#2b2b2b"
   recent_items_on_home: 5
 
 layouts_dir: layouts

@@ -7,7 +7,7 @@ lang: it
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
 <article class="about-page content-page">
-  <p class="post-date">{{ site.author.role }} · {{ site.author.location }}</p>
+  <p class="post-date">{{ site.author.role }} {{ site.author.location }}</p>
   <h1 class="page-title">{{ t.about_page.title }}</h1>
   <p class="page-intro">{{ t.about_page.intro }}</p>
 

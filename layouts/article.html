@@ -4,7 +4,7 @@ layout: site
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
 <article class="content-page">
-  <p class="post-date">{{ page.category | default: t.content.writing_label }}{% if page.date %} · {{ page.date | date: '%B %Y' }}{% endif %}</p>
+  <p class="post-date">{{ page.category | default: t.content.writing_label }}{% if page.date %} {{ page.date | date: '%B %Y' }}{% endif %}</p>
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
   <div class="article-content">{{ content }}</div>

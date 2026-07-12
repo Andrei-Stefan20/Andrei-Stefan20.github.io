@@ -3,10 +3,10 @@
 <article class="entry-row entry-{{ include.item.type }}">
   <time datetime="{{ include.item.date | date_to_xmlschema }}">{{ include.item.date | date: '%b %Y' }}</time>
   <div>
-    <p class="writing-topic">{% if include.item.type == 'project' %}{{ t.work.project_label }}{% if include.item.role %} · {{ include.item.role }}{% endif %}{% else %}{{ include.item.category | default: t.writing.default_category }}{% if include.item.read_time %} · {{ include.item.read_time }} {{ t.writing.read_suffix }}{% endif %}{% endif %}</p>
+    <p class="writing-topic">{% if include.item.type == 'project' %}{{ t.work.project_label }}{% if include.item.role %} {{ include.item.role }}{% endif %}{% else %}{{ include.item.category | default: t.writing.default_category }}{% if include.item.read_time %} {{ include.item.read_time }} {{ t.writing.read_suffix }}{% endif %}{% endif %}</p>
     <h2><a href="{{ include.item.url | relative_url }}">{{ include.item.title }}</a></h2>
     <p>{{ include.item.excerpt | strip_html | strip_newlines }}</p>
-    {% if include.item.type == 'project' and include.item.technologies.size > 0 %}<p class="entry-technologies">{{ include.item.technologies | join: ' · ' }}</p>{% endif %}
+    {% if include.item.type == 'project' and include.item.technologies.size > 0 %}<p class="entry-technologies">{{ include.item.technologies | join: ', ' }}</p>{% endif %}
   </div>
   <a class="writing-arrow" href="{{ include.item.url | relative_url }}" aria-label="{{ t.content.read_aria_prefix }} {{ include.item.title }}">→</a>
 </article>

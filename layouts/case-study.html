@@ -4,10 +4,10 @@ layout: site
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
 <article class="content-page">
-  <p class="post-date">{{ t.content.case_study_label }} · {{ page.year }}</p>
+  <p class="post-date">{{ t.content.case_study_label }} {{ page.year }}</p>
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
   {% if page.image %}<img class="project-hero" src="{{ page.image | relative_url }}" alt="{{ page.title }} preview">{% endif %}
-  <p class="item-tags">{{ page.technologies | join: ' · ' }}</p>
+  <p class="item-tags">{{ page.technologies | join: ', ' }}</p>
   <div class="article-content">{{ content }}</div>
 </article>
