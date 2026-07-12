@@ -1,0 +1,68 @@
+# Tutte le scritte fisse dell'interfaccia sono configurabili qui.
+navigation:
+  contact: "Contact"
+  cv: "CV"
+
+home:
+  about_title: "About"
+  recent_title: "Latest work & writing"
+  recent_intro: "The most recent projects and articles, ordered by date."
+  archive_link: "View the archive →"
+
+work:
+  title: "Projects"
+  intro: "Selected academic and professional work."
+  count_label: "PROJECTS"
+  default_role_label: "ROLE"
+  code_label: "Code ↗"
+  demo_label: "Live demo ↗"
+  paper_label: "Paper ↗"
+  project_label: "Project"
+
+writing:
+  title: "Writing"
+  intro: "Notes on artificial intelligence and software engineering."
+  count_label: "ARTICLES"
+  default_category: "Notes"
+  read_suffix: "min"
+
+archive:
+  title: "Article archive"
+  intro: "All articles in reverse chronological order."
+  empty: "No articles published yet."
+  article_label: "Article"
+
+publications:
+  title: "Publications"
+  intro: "Papers, preprints, and academic publications."
+  default_venue: "Publication"
+
+talks:
+  title: "Talks"
+  intro: "Conference talks, seminars, and presentations."
+
+teaching:
+  title: "Teaching"
+  intro: "Courses, workshops, and teaching material."
+
+content:
+  case_study_label: "CASE STUDY"
+  writing_label: "Writing"
+  read_aria_prefix: "Read"
+
+accessibility:
+  profile_photo_suffix: "profile photo"
+  project_preview_suffix: "preview"
+
+footer:
+  github: "GitHub"
+  linkedin: "LinkedIn"
+  scholar: "Google Scholar"
+  orcid: "ORCID"
+  copyright_symbol: "©"
+
+errors:
+  not_found_code: "ERROR 404"
+  not_found_title: "Page not found."
+  not_found_text: "The content may have been moved or removed."
+  home_link: "← Back to home"

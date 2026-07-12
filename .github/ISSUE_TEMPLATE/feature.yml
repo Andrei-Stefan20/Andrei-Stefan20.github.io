@@ -1,0 +1,18 @@
+name: Feature request
+description: Proponi un miglioramento riutilizzabile del template.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Esigenza
+      description: Quale problema dovrebbe risolvere?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Soluzione proposta
+    validations:
+      required: true

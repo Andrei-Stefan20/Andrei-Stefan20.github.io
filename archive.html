@@ -1,0 +1,16 @@
+---
+layout: site
+title: Article archive
+permalink: /archive/
+---
+{% assign articles = site.entries | where: 'type', 'article' | sort: 'date' | reverse %}
+<div class="page-heading"><div><h1 class="page-title">{{ site.data.interface.archive.title }}</h1><p class="page-intro">{{ site.data.interface.archive.intro }}</p></div><p class="page-count">{{ articles | size }} {{ site.data.interface.writing.count_label }}</p></div>
+{% if articles.size > 0 %}
+  {% assign current_year = '' %}
+  <div class="archive-list">
+  {% for article in articles %}
+    {% assign article_year = article.date | date: '%Y' %}
+    {% if article_year != current_year %}{% unless forloop.first %}</div>{% endunless %}<div class="archive-year"><h2>{{ article_year }}</h2>{% assign current_year = article_year %}{% endif %}
+    <article class="archive-item"><time>{{ article.date | date: '%d %b' }}</time><div><p>{{ article.category | default: site.data.interface.archive.article_label }}</p><h3><a href="{{ article.url | relative_url }}">{{ article.title }}</a></h3></div><a href="{{ article.url | relative_url }}" aria-label="{{ site.data.interface.content.read_aria_prefix }} {{ article.title }}">→</a></article>
+  {% endfor %}</div></div>
+{% else %}<p>{{ site.data.interface.archive.empty }}</p>{% endif %}

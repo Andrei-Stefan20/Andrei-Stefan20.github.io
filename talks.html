@@ -1,0 +1,7 @@
+---
+layout: site
+title: Talks
+permalink: /talks/
+---
+<h1 class="page-title">{{ site.data.interface.talks.title }}</h1><p class="page-intro">{{ site.data.interface.talks.intro }}</p>
+<div class="writing-list">{% assign items = site.talks | sort: 'date' | reverse %}{% for item in items %}<article class="writing-item"><time>{{ item.date | date: '%b %Y' }}</time><div><p class="writing-topic">{{ item.event }}</p><h2><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h2><p>{{ item.location }}</p></div><a class="writing-arrow" href="{{ item.url | relative_url }}">→</a></article>{% endfor %}</div>

@@ -1,0 +1,7 @@
+---
+layout: site
+title: Publications
+permalink: /publications/
+---
+<h1 class="page-title">{{ site.data.interface.publications.title }}</h1><p class="page-intro">{{ site.data.interface.publications.intro }}</p>
+<div class="writing-list">{% assign items = site.publications | sort: 'date' | reverse %}{% for item in items %}<article class="writing-item"><time>{{ item.date | date: '%Y' }}</time><div><p class="writing-topic">{{ item.venue | default: site.data.interface.publications.default_venue }}</p><h2><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h2><p>{{ item.authors }}</p></div><a class="writing-arrow" href="{{ item.url | relative_url }}">→</a></article>{% endfor %}</div>

@@ -1,0 +1,8 @@
+---
+layout: site
+title: Projects
+permalink: /work/
+---
+{% assign projects = site.entries | where: 'type', 'project' | sort: 'date' | reverse %}
+<div class="page-heading"><div><h1 class="page-title">{{ site.data.interface.work.title }}</h1><p class="page-intro">{{ site.data.interface.work.intro }}</p></div><p class="page-count">{{ projects | size }} {{ site.data.interface.work.count_label }}</p></div>
+<div class="item-list">{% for project in projects %}{% include work-entry.html item=project %}{% endfor %}</div>

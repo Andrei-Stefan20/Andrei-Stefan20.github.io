@@ -1,105 +1,25 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Andrei Alexandru Stefan — Portfolio</title>
-  <meta name="description" content="Portfolio personale di Andrei Alexandru Stefan">
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
-  <header class="site-header">
-    <div class="wrapper">
-      <a class="site-title" href="index.html">Andrei Alexandru Stefan</a>
-      <nav class="site-nav">
-        <a class="page-link" href="index.html">Home</a>
-        <a class="page-link" href="progetti.html">Progetti</a>
-        <a class="page-link" href="mailto:tua-email@example.com">Contatti</a>
-      </nav>
-    </div>
-  </header>
-
-  <div class="page-content">
-    <div class="wrapper">
-
-      <table class="profile-table">
-        <tr>
-          <td>
-            <img class="profile-photo" src="images/profilo.jpg" alt="Foto profilo">
-          </td>
-          <td>
-            <h1>Andrei Alexandru Stefan</h1>
-            <p><b>MSc in AI @ Uniba.</b> <b>Full-Stack Developer.</b> <b>Italia.</b></p>
-            <p style="font-size:15px">
-              <a href="mailto:tua-email@example.com">tua-email@example.com</a> ·
-              <a href="cv.pdf">[CV]</a>
-            </p>
-          </td>
-        </tr>
-      </table>
-
-      <h2>About</h2>
-
-      <p>
-      I'm a Full-Stack Developer and Master's student in Artificial Intelligence at the University of Bari.
-      </p>
-      
-      <p>
-      My work spans software engineering, machine learning, and AI research. I'm particularly interested in large language models, knowledge graphs, and building reliable software systems.
-      </p>
-      
-      <p>
-      Here you'll find a selection of the projects I've worked on throughout my academic and professional career.
-      </p>
-
-     <h4 class="section-title">Featured Projects</h4>
-
-      <table class="item-table">
-        <tr>
-          <td><a href="https://github.com/Andrei-Stefan20/progetto-1"><img class="item-thumb" src="images/progetto1.png" alt="Progetto 1"></a></td>
-          <td>
-            <a class="item-title" href="https://github.com/Andrei-Stefan20/progetto-1">Nome Progetto 1</a>
-            <div class="item-desc">Breve descrizione del progetto: cosa fa e perché è interessante.</div>
-            <div class="item-tags">Python · Flask · SQLite</div>
-            <div class="item-links">
-              <a href="https://github.com/Andrei-Stefan20/progetto-1">GitHub</a>
-              <a href="#">Demo live</a>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/Andrei-Stefan20/progetto-2"><img class="item-thumb" src="images/progetto2.png" alt="Progetto 2"></a></td>
-          <td>
-            <a class="item-title" href="https://github.com/Andrei-Stefan20/progetto-2">Nome Progetto 2</a>
-            <div class="item-desc">Breve descrizione del progetto: cosa fa e perché è interessante.</div>
-            <div class="item-tags">JavaScript · React</div>
-            <div class="item-links">
-              <a href="https://github.com/Andrei-Stefan20/progetto-2">GitHub</a>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <p style="margin-top:20px"><a href="progetti.html">Vedi tutti i progetti →</a></p>
-
-    </div>
+---
+layout: site
+title: Home
+---
+<div class="profile">
+  {% if site.author.avatar and site.author.avatar != '' %}<img class="profile-photo" src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }} {{ site.data.interface.accessibility.profile_photo_suffix }}">{% endif %}
+  <div>
+    {% if site.author.name and site.author.name != '' %}<h1>{{ site.author.name }}</h1>{% endif %}
+    {% if site.author.role != '' or site.author.education != '' or site.author.location != '' %}<p>{% if site.author.role and site.author.role != '' %}<b>{{ site.author.role }}.</b>{% endif %} {% if site.author.education and site.author.education != '' %}<b>{{ site.author.education }}.</b>{% endif %} {% if site.author.location and site.author.location != '' %}<b>{{ site.author.location }}.</b>{% endif %}</p>{% endif %}
+    {% if site.author.email and site.author.email != '' %}<p class="small"><a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></p>{% endif %}
   </div>
+</div>
 
-  <footer class="site-footer">
-    <div class="wrapper">
-      <h2 class="footer-heading">Andrei Alexandru Stefan</h2>
-      <ul class="contact-list">
-        <li>Andrei Alexandru Stefan</li>
-        <li><a href="mailto:tua-email@example.com">tua-email@example.com</a></li>
-      </ul>
-      <ul class="social-media-list">
-        <li><a href="https://github.com/Andrei-Stefan20">GitHub: Andrei-Stefan20</a></li>
-        <li><a href="https://www.linkedin.com/in/andre-alexandru-stefan">LinkedIn: andre-alexandru-stefan</a></li>
-      </ul>
-    </div>
-  </footer>
+<h2 class="section-title">{{ site.data.interface.home.about_title }}</h2>
+<div class="about-text">{% for paragraph in site.about %}<p>{{ paragraph }}</p>{% endfor %}</div>
 
-</body>
-</html>
+{% if site.entries.size > 0 %}
+<h2 class="section-title">{{ site.data.interface.home.recent_title }}</h2>
+<p class="section-intro">{{ site.data.interface.home.recent_intro }}</p>
+<div class="recent-list">
+  {% assign recent = site.entries | sort: 'date' | reverse %}
+  {% for entry in recent limit: site.appearance.recent_items_on_home %}{% include recent-entry.html item=entry %}{% endfor %}
+</div>
+<p class="more-link"><a href="{{ '/archive/' | relative_url }}">{{ site.data.interface.home.archive_link }}</a></p>
+{% endif %}

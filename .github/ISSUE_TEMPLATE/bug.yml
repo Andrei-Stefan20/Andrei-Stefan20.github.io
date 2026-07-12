@@ -1,0 +1,23 @@
+name: Bug report
+description: Segnala un problema nel template o nel layout.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrizione
+      description: Cosa non funziona e cosa ti aspettavi?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser e dispositivo
+      placeholder: Safari 18, iPhone 15
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Come riprodurre il problema
+    validations:
+      required: true

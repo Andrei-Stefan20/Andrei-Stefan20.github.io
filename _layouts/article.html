@@ -1,0 +1,9 @@
+---
+layout: site
+---
+<article class="content-page">
+  <p class="post-date">{{ page.category | default: site.data.interface.content.writing_label }}{% if page.date %} · {{ page.date | date: '%B %Y' }}{% endif %}</p>
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
+  <div class="article-content">{{ content }}</div>
+</article>

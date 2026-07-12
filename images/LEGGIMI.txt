@@ -1,0 +1,13 @@
+Metti qui le tue immagini:
+
+- profilo.jpg      -> la tua foto profilo (quadrata, es. 400x400px)
+- progetto1.png     -> anteprima/screenshot del progetto 1
+- progetto2.png     -> anteprima/screenshot del progetto 2
+- progetto3.png     -> anteprima/screenshot del progetto 3
+
+Puoi aggiungere altre immagini con qualsiasi nome, basta che il nome
+del file corrisponda a quello richiamato negli attributi src="images/..."
+dentro index.html e progetti.html.
+
+Formati consigliati: .jpg o .png, peso sotto i 500 KB per non appesantire
+il caricamento della pagina.

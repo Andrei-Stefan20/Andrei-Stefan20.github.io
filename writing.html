@@ -1,0 +1,8 @@
+---
+layout: site
+title: Writing
+permalink: /writing/
+---
+{% assign articles = site.entries | where: 'type', 'article' | sort: 'date' | reverse %}
+<div class="page-heading"><div><h1 class="page-title">{{ site.data.interface.writing.title }}</h1><p class="page-intro">{{ site.data.interface.writing.intro }}</p></div><p class="page-count">{{ articles | size }} {{ site.data.interface.writing.count_label }}</p></div>
+<div class="writing-list writing-page">{% for article in articles %}{% include writing-entry.html item=article %}{% endfor %}</div>
