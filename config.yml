@@ -5,11 +5,21 @@ url: "https://andrei-stefan20.github.io"
 baseurl: ""
 repository: "Andrei-Stefan20/Andrei-Stefan20.github.io"
 timezone: "Europe/Rome"
+logo: "/images/profilo.jpg"
 
 template:
   license_year: 2026
   custom_domain: ""
-  discussions_enabled: false
+
+analytics:
+  plausible_domain: ""
+
+discussions:
+  enabled: false
+  repo: ""
+  repo_id: ""
+  category: "Announcements"
+  category_id: ""
 
 author:
   name: "Andrei Alexandru Stefan"

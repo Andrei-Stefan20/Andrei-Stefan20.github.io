@@ -1,0 +1,16 @@
+---
+layout: site
+title: Argomenti
+permalink: /it/topics/
+lang: it
+---
+{% assign current_lang = page.lang | default: site.languages.default %}
+{% assign t = site.data.locales[current_lang] %}
+{% assign articles = site.pages | where: 'type', 'article' | where: 'lang', current_lang %}
+{% assign categories = articles | map: 'category' | uniq | sort %}
+<div class="page-heading"><div><h1 class="page-title">{{ t.topics.title }}</h1><p class="page-intro">{{ t.topics.intro }}</p></div><p class="page-count">{{ categories | size }} {{ t.topics.count_label }}</p></div>
+{% for category in categories %}
+  {% assign topic_articles = articles | where: 'category', category | sort: 'date' | reverse %}
+  <h2 class="section-title">{{ category | default: t.writing.default_category }}</h2>
+  <div class="writing-list">{% for article in topic_articles %}{% include writing-entry.html item=article %}{% endfor %}</div>
+{% endfor %}

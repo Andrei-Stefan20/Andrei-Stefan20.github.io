@@ -40,8 +40,9 @@ a:hover { color: var(--fg); text-decoration: underline; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-decoration: none; }
 .wrapper { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 30px; }
 .site-header { position: relative; z-index: 1; background: var(--bg); border-top: 5px solid var(--fg-soft); border-bottom: 1px solid var(--border); min-height: 61px; }
+.site-header .wrapper { max-width: 1100px; }
 .site-header .wrapper { display: flex; align-items: center; justify-content: space-between; gap: 25px; }
-.site-title { color: var(--fg-soft); font-size: 23px; font-weight: 400; line-height: 56px; letter-spacing: -.8px; }
+.site-title { color: var(--fg-soft); font-size: 23px; font-weight: 400; line-height: 56px; letter-spacing: -.8px; white-space: nowrap; flex-shrink: 0; }
 .site-nav { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .nav-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .nav-utility { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
@@ -150,6 +151,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .article-content code { font-family: monospace; background: var(--code-bg); padding: 2px 4px; }
 .article-content pre code { padding: 0; }
 .article-content blockquote { color: var(--muted); border-left: 3px solid var(--border); margin: 25px 0; padding-left: 18px; }
+.comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 .about-page .page-intro { max-width: 650px; font-size: 19px; line-height: 1.55; }
 .about-section { margin-top: 42px; }
 .about-section h2 { border-bottom: 1px solid var(--border); padding-bottom: 7px; }

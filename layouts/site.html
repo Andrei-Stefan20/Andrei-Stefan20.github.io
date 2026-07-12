@@ -18,12 +18,34 @@
       } catch (e) {}
     })();
   </script>
+  <link rel="icon" type="image/svg+xml" href="{{ '/images/favicon.svg' | relative_url }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
   <link rel="stylesheet" href="{{ '/css/style.css' | relative_url }}">
   <style>:root { --accent-base: {{ site.appearance.accent_color | default: '#00008b' }}; }</style>
-  {% seo %}{% feed_meta %}
+  {% assign seo_image = page.image | default: site.logo %}
+  {% seo image=seo_image %}{% feed_meta %}
+  {% assign current_home = site.languages.available | where: 'code', current_lang | map: 'home_url' | first %}
+  {% assign path_remainder = page.url | remove_first: current_home %}
+  {% for lang in site.languages.available %}
+    {% if lang.code == current_lang %}
+      {% assign hreflang_url = page.url %}
+    {% else %}
+      {% assign hreflang_url = nil %}
+      {% if page.slug %}
+        {% assign translation = site.pages | where: 'slug', page.slug | where: 'lang', lang.code | first %}
+        {% if translation %}{% assign hreflang_url = translation.url %}{% endif %}
+      {% endif %}
+      {% unless hreflang_url %}{% assign hreflang_url = lang.home_url | append: path_remainder %}{% endunless %}
+    {% endif %}
+  <link rel="alternate" hreflang="{{ lang.code }}" href="{{ site.url }}{{ hreflang_url | relative_url }}">
+  {% endfor %}
+  {% assign default_home = site.languages.available | where: 'code', site.languages.default | map: 'home_url' | first %}
+  <link rel="alternate" hreflang="x-default" href="{{ site.url }}{{ default_home | relative_url }}">
+  {% if site.analytics.plausible_domain and site.analytics.plausible_domain != '' %}
+  <script defer data-domain="{{ site.analytics.plausible_domain }}" src="https://plausible.io/js/script.js"></script>
+  {% endif %}
 </head>
 <body>
   {% include site-header.html %}

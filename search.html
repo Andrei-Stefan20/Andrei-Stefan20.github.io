@@ -1,0 +1,18 @@
+---
+layout: site
+title: Search
+permalink: /search/
+---
+{% assign current_lang = page.lang | default: site.languages.default %}
+{% assign t = site.data.locales[current_lang] %}
+<h1 class="page-title">{{ t.search.title }}</h1>
+<p class="page-intro">{{ t.search.intro }}</p>
+<div id="search"></div>
+<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet">
+<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    if (typeof PagefindUI === 'undefined') return;
+    new PagefindUI({ element: '#search', showSubResults: true });
+  });
+</script>

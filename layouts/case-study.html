@@ -10,4 +10,5 @@ layout: site
   {% if page.image %}<img class="project-hero" src="{{ page.image | relative_url }}" alt="{{ page.title }} preview">{% endif %}
   <p class="item-tags">{{ page.technologies | join: ', ' }}</p>
   <div class="article-content">{{ content }}</div>
+  {% include comments.html %}
 </article>

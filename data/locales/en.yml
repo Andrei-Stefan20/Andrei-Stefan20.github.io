@@ -10,6 +10,10 @@ navigation:
       url: "/writing/"
     - title: "Archive"
       url: "/archive/"
+    - title: "Topics"
+      url: "/topics/"
+    - title: "Search"
+      url: "/search/"
   contact: "Contact"
   cv: "CV"
 
@@ -63,6 +67,15 @@ archive:
   intro: "All articles in reverse chronological order."
   empty: "No articles published yet."
   article_label: "Article"
+
+topics:
+  title: "Topics"
+  intro: "Articles grouped by topic."
+  count_label: "TOPICS"
+
+search:
+  title: "Search"
+  intro: "Search projects and articles."
 
 content:
   case_study_label: "CASE STUDY"

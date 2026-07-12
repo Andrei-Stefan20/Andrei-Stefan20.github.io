@@ -1,4 +1,4 @@
-# Simple Template
+# Quaderno Portfolio Template
 
 ## Quick start
 
