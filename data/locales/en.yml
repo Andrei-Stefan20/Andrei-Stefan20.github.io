@@ -1,4 +1,3 @@
-# English strings. Every fixed label, plus navigation and the About text, lives here.
 navigation:
   main:
     - title: "Home"

@@ -1,14 +1,14 @@
-## Cosa cambia
+## What changes
 
-Descrivi brevemente le modifiche.
+Briefly describe the changes.
 
-## Verifica
+## Verification
 
-- [ ] Ho controllato il sito su desktop.
-- [ ] Ho controllato il sito su mobile.
-- [ ] I link nuovi funzionano.
-- [ ] Non ho inserito dati sensibili.
+- [ ] Checked the site on desktop.
+- [ ] Checked the site on mobile.
+- [ ] New links work.
+- [ ] No sensitive data included.
 
 ## Screenshot
 
-Se la modifica è visiva, aggiungi prima e dopo.
+If the change is visual, add before and after.

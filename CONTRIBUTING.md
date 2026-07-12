@@ -1,10 +1,10 @@
-# Contribuire
+# Contributing
 
-Grazie per voler migliorare il template.
+Thanks for wanting to improve the template.
 
-1. Crea un branch a partire da `main`.
-2. Mantieni il progetto privo di framework e dipendenze quando possibile.
-3. Controlla accessibilità, link e resa responsive.
-4. Apri una pull request usando la checklist proposta.
+1. Create a branch from `main`.
+2. Keep the project free of frameworks and dependencies whenever possible.
+3. Check accessibility, links, and responsive rendering.
+4. Open a pull request using the proposed checklist.
 
-Per bug e funzionalità usa i modelli nella sezione Issues. Le personalizzazioni specifiche di un singolo portfolio dovrebbero restare fuori dal template generale.
+Use the templates in the Issues section for bugs and feature requests. Customizations specific to a single portfolio should stay out of the general template.

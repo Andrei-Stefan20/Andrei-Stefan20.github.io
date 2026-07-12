@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
-# Sincronizza i file non elaborati da Jekyll con i valori di _config.yml.
 require "yaml"
 
 root = File.expand_path("..", __dir__)
-config = YAML.safe_load(File.read(File.join(root, "_config.yml")))
+config = YAML.safe_load(File.read(File.join(root, "config.yml")))
 author = config.fetch("author")
 template = config.fetch("template", {})
 name = author.fetch("name")

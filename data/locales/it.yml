@@ -1,4 +1,3 @@
-# Stringhe italiane. Ogni etichetta fissa, la navigazione e il testo "About" vivono qui.
 navigation:
   main:
     - title: "Home"

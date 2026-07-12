@@ -1,5 +1,5 @@
-# Codice di condotta
+# Code of Conduct
 
-Contribuenti e maintainer si impegnano a mantenere un ambiente rispettoso, inclusivo e professionale. Comportamenti offensivi, molestie e pubblicazione di informazioni private non sono accettati.
+Contributors and maintainers commit to keeping a respectful, inclusive, and professional environment. Offensive behavior, harassment, and publishing private information are not accepted.
 
-I maintainer possono modificare o rimuovere contributi non conformi e limitare la partecipazione di chi viola queste regole. Per segnalazioni riservate usa il contatto indicato in `SECURITY.md`.
+Maintainers may edit or remove contributions that don't comply and limit participation from those who violate these rules. For confidential reports, use the contact listed in `SECURITY.md`.
