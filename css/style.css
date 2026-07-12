@@ -12,6 +12,7 @@
   --code-bg: #f2f2f2;
   --invert-bg: #111;
   --invert-fg: #fff;
+  --grid-line: color-mix(in srgb, var(--fg) 8%, transparent);
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -61,6 +62,25 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .theme-toggle .icon-sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+
+.bg-toggle { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--border); border-radius: 50%; background: var(--bg); color: var(--fg-soft); cursor: pointer; transition: border-color .15s ease, color .15s ease; }
+.bg-toggle:hover, .bg-toggle:focus-visible { border-color: var(--accent); color: var(--accent); }
+.bg-toggle svg { display: none; }
+.bg-toggle .icon-bg-none { display: block; }
+:root[data-bg="grid"] .bg-toggle .icon-bg-none { display: none; }
+:root[data-bg="grid"] .bg-toggle .icon-bg-grid { display: block; }
+:root[data-bg="dots"] .bg-toggle .icon-bg-none { display: none; }
+:root[data-bg="dots"] .bg-toggle .icon-bg-dots { display: block; }
+
+:root[data-bg="grid"] body {
+  background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+:root[data-bg="dots"] body {
+  background-image: radial-gradient(var(--grid-line) 1.4px, transparent 1.4px);
+  background-size: 22px 22px;
+}
+
 .page-content { padding: 40px 0; min-height: 60vh; }
 .profile { display: flex; align-items: center; justify-content: center; gap: 25px; margin-bottom: 34px; }
 .profile-photo { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; }

@@ -73,6 +73,7 @@ accessibility:
   profile_photo_suffix: "profile photo"
   project_preview_suffix: "preview"
   theme_toggle: "Switch between light and dark theme"
+  background_toggle: "Change background pattern"
   language_switch_prefix: "View in"
 
 footer:
