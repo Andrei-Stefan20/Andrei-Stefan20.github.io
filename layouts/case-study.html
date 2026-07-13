@@ -1,14 +1,27 @@
 ---
 layout: site
 ---
+<link rel="stylesheet" href="{{ '/css/case-study.css' | relative_url }}">
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
-<article class="content-page">
-  <p class="post-date">{{ t.content.case_study_label }} {{ page.year }}</p>
-  <h1 class="page-title">{{ page.title }}</h1>
-  {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
-  {% if page.image %}<img class="project-hero" src="{{ page.image | relative_url }}" alt="{{ page.title }} preview">{% endif %}
-  <p class="item-tags">{{ page.technologies | join: ', ' }}</p>
+<article class="content-page case-study-page">
+  <header class="case-study-header">
+    <p class="case-study-kicker">{{ t.content.case_study_label }} {{ page.year }}</p>
+    <h1 class="page-title">{{ page.title }}</h1>
+    {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
+    {% if page.technologies %}
+      <div class="case-study-meta">
+        {% for technology in page.technologies %}<span>{{ technology }}</span>{% endfor %}
+      </div>
+    {% endif %}
+    {% if page.code or page.demo or page.paper %}
+      <div class="case-study-actions">
+        {% if page.code %}<a class="case-study-button primary" href="{{ page.code }}" target="_blank" rel="noopener">View source ↗</a>{% endif %}
+        {% if page.demo %}<a class="case-study-button" href="{{ page.demo }}" target="_blank" rel="noopener">Live demo ↗</a>{% endif %}
+        {% if page.paper %}<a class="case-study-button" href="{{ page.paper }}" target="_blank" rel="noopener">Read paper ↗</a>{% endif %}
+      </div>
+    {% endif %}
+  </header>
   <div class="article-content">{{ content }}</div>
   {% include comments.html %}
 </article>
