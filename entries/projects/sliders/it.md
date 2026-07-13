@@ -7,11 +7,11 @@ slug: sliders
 permalink: /it/entries/sliders/
 date: 2026-07-13
 year: 2026
-image: "https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider.gif"
-thumbnail: "https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider.gif"
-cover: "https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider.gif"
-cover_alt: "Interfaccia di SLIDERS con immagine query e controlli visivi appresi"
-thumbnail_alt: "Interfaccia di ricerca visiva SLIDERS"
+image: "/images/projects/sliders/11_steering_results.png"
+thumbnail: "/images/projects/sliders/11_steering_results.png"
+cover: "/images/projects/sliders/11_steering_results.png"
+cover_alt: "Risultati del retrieval prima e dopo lo steering verso il tessuto fogliare ingiallito"
+thumbnail_alt: "Risultati SLIDERS con e senza steering"
 label: "RICERCA"
 role: "Interpretable Image Retrieval"
 technologies: [Python, PyTorch, DINOv2, Sparse Autoencoders, FAISS, FastAPI, Vision-Language Models]
@@ -25,17 +25,19 @@ La maggior parte dei sistemi di image retrieval risponde a una sola domanda: qua
 
 SLIDERS ne aggiunge una seconda: **vicine rispetto a quale caratteristica visiva?**
 
-Una ricerca basata su embedding comprime la query in un vettore e restituisce i vicini più prossimi. Funziona bene quando la nozione di similarità desiderata è già espressa nell'immagine iniziale. È meno utile quando si vuole mantenere la struttura generale della query, ma cambiare una proprietà precisa, come una maggiore ingiallimento, lesioni più scure, venature più evidenti o un diverso bordo della foglia.
+Una ricerca basata su embedding comprime la query in un vettore e restituisce i vicini più prossimi. Funziona bene quando la similarità desiderata è già espressa nell'immagine iniziale. È meno utile quando si vuole mantenere la struttura generale della query ma modificare una proprietà precisa, come un ingiallimento più marcato, lesioni più scure, venature più evidenti o un diverso bordo della foglia.
 
-Il progetto trasforma queste proprietà in controlli. L'utente carica un'immagine, osserva le feature visive scoperte dal modello e ne modifica il peso attraverso slider. La query viene alterata prima del retrieval, quindi il ranking cambia perché si è spostata la rappresentazione, non perché è stato applicato un filtro testuale alla fine.
+Il progetto trasforma queste proprietà in controlli. La query viene modificata prima del retrieval, quindi il ranking cambia perché la rappresentazione si è spostata nello spazio degli embedding, non perché è stato applicato un filtro testuale dopo la ricerca.
 
-![Pannello query e assi di steering appresi](https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider.gif)
+![Risultati prima e dopo lo steering verso il tessuto fogliare ingiallito](/images/projects/sliders/11_steering_results.png)
 
-L'implementazione attuale si concentra sull'evidenza locale. Invece di rappresentare ogni immagine con un solo token globale, conserva i descrittori delle patch, apprende feature sparse direttamente su quelle regioni e usa una ricerca late-interaction. È una pipeline più complessa di una normale demo FAISS, ma rende i controlli molto più interpretabili.
+L'implementazione attuale lavora soprattutto sull'evidenza locale. Invece di rappresentare ogni immagine con un solo token globale, conserva i descrittori delle patch, apprende feature sparse direttamente su quelle regioni e usa una ricerca late-interaction.
 
 ## Da un'immagine a 256 regioni visive
 
 Il backbone è la variante con register token di DINOv2 ViT-L/14. Ogni immagine viene ridimensionata, ritagliata al centro a `224 × 224` e divisa in una griglia `16 × 16`. Il risultato è composto da 256 patch token, ciascuno con 1024 dimensioni.
+
+![Griglia 16 per 16 applicata all'immagine di input](/images/projects/sliders/01_patch_grid.png)
 
 ```text
 image
@@ -44,17 +46,19 @@ image
   -> tensore [256, 1024]
 ```
 
-Usare le patch invece di un singolo embedding CLS cambia ciò che il resto del sistema può apprendere. Un vettore globale può indicare che l'immagine contiene una foglia malata, ma non mantiene un legame esplicito tra una feature e la regione che l'ha generata. I patch token conservano quel legame spaziale.
+Usare le patch invece di un singolo embedding CLS mantiene un legame esplicito tra una feature e la regione che l'ha generata. Un vettore globale può indicare che l'immagine contiene una foglia malata, ma non dice quale parte dell'immagine abbia prodotto una determinata attivazione.
 
-La variante con register token è importante per un altro motivo. I Vision Transformer possono produrre alcune attivazioni di patch con norma molto elevata che non corrispondono chiaramente a contenuto visibile. Un modello sparso rischierebbe di interpretarle come feature reali. I register token assorbono buona parte di questo comportamento e rendono i token spaziali più adatti al dictionary learning.
+![Patch selezionate e relativi token DINOv2 da 1024 dimensioni](/images/projects/sliders/02_patch_tokenization.png)
 
-Il corpus di patch viene salvato in un array memory-mapped invece di essere caricato interamente in RAM. Ogni riga è collegata all'identificatore dell'immagine di origine, mentre i metadati registrano la forma della griglia e il preprocessing. È una parte meno appariscente del progetto, ma rende pratici gli esperimenti su grandi quantità di patch.
+La variante con register token riduce inoltre il problema di alcune patch con norma anormalmente elevata che non corrispondono chiaramente a contenuto visibile. Un modello sparso potrebbe interpretarle come feature reali.
+
+![Norma L2 dei patch token distribuita sull'immagine](/images/projects/sliders/03_patch_token_norm.png)
+
+Il corpus di patch viene salvato in un array memory-mapped. Ogni riga è collegata all'immagine di origine e i metadati registrano forma della griglia e preprocessing.
 
 ## Apprendere un dizionario visivo sparso
 
-Il modello centrale è uno Sparse Autoencoder addestrato direttamente sui patch token di DINOv2.
-
-La sua struttura è volutamente sovracompleta:
+Il modello centrale è uno Sparse Autoencoder addestrato direttamente sui patch token DINOv2. La sua struttura è volutamente sovracompleta:
 
 ```text
 patch token da 1024 dimensioni
@@ -71,42 +75,41 @@ h = ReLU(W_enc x + b_enc)
 x_hat = W_dec h + b_dec
 ```
 
-L'obiettivo non è comprimere. Il livello nascosto è otto volte più largo dell'input perché servono abbastanza unità da permettere una reale specializzazione. In un autoencoder stretto, le stesse unità devono partecipare alla ricostruzione di pattern molto diversi. Nel modello sovracompleto, una feature può rimanere inattiva quasi sempre e rispondere soltanto a una proprietà specifica.
+L'obiettivo non è comprimere. Il livello nascosto è otto volte più largo dell'input per permettere alle singole unità di specializzarsi. Una feature può restare inattiva per quasi tutte le patch e rispondere soltanto a un pattern preciso.
 
-Ho usato un vincolo TopK con `L0 = 40`. Per ogni patch sopravvivono solo le quaranta attivazioni più alte; le altre 8.152 vengono azzerate prima del decoding. Questo rende il budget di sparsità esplicito e facile da controllare.
+Ho usato un vincolo TopK con `L0 = 40`: per ogni patch sopravvivono solo le quaranta attivazioni più forti, mentre le altre 8.152 vengono azzerate prima del decoding.
 
-Su una patch rappresentativa, il codice sparso ricostruisce il token originale con similarità coseno `0.913` usando soltanto 40 feature attive. Sulle 256 patch dell'immagine analizzata, la similarità coseno media di ricostruzione è circa `0.962`. La stessa immagine attiva complessivamente 1.721 feature distinte, ma la maggior parte compare solo in poche patch. È il comportamento desiderato: il dizionario viene usato in modo ampio nell'immagine, mentre le singole feature restano locali.
+![Codifica sparsa e ricostruzione di un patch token DINOv2](/images/projects/sliders/04_sae_encode_decode.png)
 
-Le loss di training e validazione scendono insieme. L'early stopping seleziona l'epoca 49 e la percentuale di feature morte resta a zero. Le colonne del decoder vengono normalizzate dopo l'ottimizzazione, così due slider con lo stesso valore numerico corrispondono a direzioni di magnitudine comparabile. Le feature inattive per troppo tempo vengono riciclate usando le direzioni del residuo, evitando che il dizionario perda capacità senza che sia evidente.
+Su una patch rappresentativa, il codice sparso ricostruisce il token con similarità coseno `0.913` usando 40 feature attive. Sulle 256 patch dell'immagine, la similarità coseno media è circa `0.962`. La stessa immagine attiva complessivamente 1.721 feature distinte, ma la maggior parte compare solo in poche patch.
 
-Il decoder non serve soltanto a ricostruire. Ogni sua colonna è una direzione a norma unitaria nello spazio DINOv2 originale. Quelle colonne diventano direttamente le direzioni degli slider.
+![Utilizzo delle feature e qualità di ricostruzione sulle 256 patch](/images/projects/sliders/05_sae_sparsity.png)
+
+Le loss di training e validazione scendono insieme. L'early stopping seleziona l'epoca 49 e la percentuale di feature morte resta a zero. Le colonne del decoder vengono normalizzate e le feature inattive troppo a lungo vengono riciclate tramite direzioni del residuo.
+
+![Curve di training e validazione dello Sparse Autoencoder](/images/projects/sliders/15_training_curves.png)
+
+Il decoder non serve soltanto a ricostruire. Ogni sua colonna è una direzione nello spazio DINOv2 originale e diventa direttamente una direzione utilizzabile da uno slider.
 
 ## Prima di dare un nome a una feature serve evidenza
 
-Un indice come `feature 4625` è utile durante il debug, ma non in un'interfaccia. Il naming delle feature è quindi una pipeline separata, non un'aggiunta cosmetica.
+Un indice come `feature 4625` è utile durante il debug, ma non in un'interfaccia. Per ogni feature il sistema cerca patch con attivazione alta e bassa, estrae crop più ampi e marca la cella attiva.
 
-Per ogni feature candidata, il sistema cerca nel corpus le patch con attivazione più alta e quelle con attivazione bassa o nulla. Al Vision-Language Model non viene mostrata soltanto la patch isolata. Viene estratto un crop più ampio e viene evidenziata la cella attiva. Questo mantiene il contesto necessario per interpretare la regione senza fingere che la causa dell'attivazione sia sempre contenuta perfettamente in una patch `14 × 14`.
+![Mappa di attivazione spaziale della feature 4625](/images/projects/sliders/06_feature_activation.png)
 
-Il VLM riceve gruppi contrastivi:
+Il Vision-Language Model riceve gruppi contrastivi e deve individuare la proprietà visiva che separa gli esempi. Un secondo passaggio verifica che il nome proposto sia sostenuto dai dati.
 
-- patch in cui la feature si attiva fortemente;
-- patch in cui la feature è assente o debole;
-- il contesto dell'immagine con la regione attiva marcata.
+![Esempi ad alta e bassa attivazione usati per nominare una feature](/images/projects/sliders/07_feature_naming.png)
 
-Gli viene chiesto di individuare la proprietà visiva che separa i due gruppi. Un secondo passaggio verifica che il nome proposto sia realmente sostenuto dagli esempi. Le etichette generiche o poco affidabili possono essere rifiutate invece di essere mostrate come corrette.
+Da questa procedura emergono nomi come `yellowing leaf tissue`, `dark brown lesions`, `brown necrotic spots`, `leaf edge notches`, `bright green veins` e `green leaf veins`.
 
-Da questa procedura emergono nomi come:
+I crop localizzati rendono l'evidenza verificabile: mostrano la patch attiva nel proprio contesto e aiutano a capire se la feature risponde davvero al pattern desiderato o a un artefatto vicino.
 
-- `yellowing leaf tissue`;
-- `dark brown lesions`;
-- `brown necrotic spots`;
-- `leaf edge notches`;
-- `bright green veins`;
-- `green leaf veins`.
+![Crop contestuali con la patch attiva evidenziata](/images/projects/sliders/08_localized_crops.png)
 
-Non sono semplici didascalie aggiunte dopo il training. Le mappe di attivazione mostrano dove la feature risponde e le gallerie delle patch più forti permettono di controllare se l'unità è coerente su foglie differenti. Nel caso della feature 4625, le attivazioni più alte si concentrano ripetutamente sul tessuto ingiallito, non sull'intera foglia o sullo sfondo grigio.
+Una galleria più ampia permette poi di verificare se la stessa etichetta rimanga coerente su immagini e condizioni diverse.
 
-![Vista di dettaglio di una feature nell'interfaccia](https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider2.gif)
+![Galleria di feature sparse nominate e relative patch più attive](/images/projects/sliders/14_feature_gallery.png)
 
 ## Lo steering è un'operazione geometrica
 
@@ -116,93 +119,69 @@ Uno slider modifica la query sommando una o più direzioni del decoder:
 q_steered = normalize(q + sum(alpha_i * d_i))
 ```
 
-`q` è la patch query, `d_i` è una direzione unitaria del decoder e `alpha_i` è il valore dello slider. I valori positivi spingono la query verso la feature, quelli negativi la allontanano. La normalizzazione riporta il risultato sulla sfera unitaria usata dalla similarità coseno.
+`q` è la patch query, `d_i` è una direzione unitaria del decoder e `alpha_i` è il valore dello slider. I valori positivi spingono la query verso la feature, quelli negativi la allontanano. La normalizzazione riporta il vettore sulla sfera unitaria usata dalla similarità coseno.
 
-Non è equivalente a premiare alcuni candidati dopo il retrieval. La query viene modificata prima della ricerca e il nuovo vettore viene usato direttamente nell'indice. Il risultato deve quindi emergere dalla geometria appresa e non da una regola di categoria scritta a mano.
+![Interpretazione geometrica dello steering e della rinormalizzazione](/images/projects/sliders/12_steering_geometry.png)
 
-Uno slider utile deve avere un comportamento regolare. Aumentando il valore, la feature selezionata dovrebbe aumentare progressivamente nei risultati. Per la feature `yellowing leaf tissue`, l'attivazione media nei risultati cresce rapidamente tra `α = 0` e `α = 2`, poi tende a saturare. La correlazione di Spearman tra intensità dello slider e attivazione recuperata è `ρ = 0.90`.
+La query viene modificata prima della ricerca. Non si tratta quindi di premiare alcuni risultati dopo il retrieval.
 
-Il confronto qualitativo è chiaro. Con `α = 0`, i risultati rimangono vicini alla foglia verde originale. Con `α = 6`, il ranking si sposta verso foglie gialle e danneggiate, mantenendo però l'oggetto e la struttura generale della query.
+Per la feature `yellowing leaf tissue`, l'attivazione media nei risultati cresce rapidamente tra `alpha = 0` e `alpha = 2`, poi tende a saturare. La correlazione di Spearman tra intensità dello slider e attivazione recuperata è `rho = 0.90`.
 
-Questo è il comportamento che l'interfaccia deve rendere visibile: non un nuovo prompt testuale e non un filtro di classe, ma un movimento controllato lungo una direzione appresa dalla rappresentazione visiva stessa.
+![Attivazione media della feature target al crescere dello slider](/images/projects/sliders/13_slider_isotonicity.png)
+
+Con `alpha = 0`, i risultati restano vicini alla foglia verde originale. Con `alpha = 6`, il ranking si sposta verso foglie gialle e danneggiate mantenendo l'oggetto e la struttura generale della query.
 
 ## Perché il nearest-neighbour globale non bastava
 
-Una prima versione del sistema usava un solo embedding globale per immagine. È un percorso veloce e ancora utile per la similarità generale, ma indebolisce il rapporto tra una feature locale e il risultato.
-
-Supponiamo che lo slider rappresenti una piccola lesione marrone. L'embedding globale può muoversi nella direzione corretta e continuare a premiare immagini simili per forma, colore medio o sfondo, anche se non contengono davvero la lesione desiderata. La proprietà locale viene facilmente coperta dalla similarità complessiva.
-
-Il retrieval a livello di patch affronta il problema con la late interaction. Query e immagini del corpus sono entrambe insiemi di patch vector. Le immagini candidate vengono valutate con MaxSim:
+Un embedding globale è veloce e utile per la similarità generale, ma può coprire una proprietà locale con forma, colore medio o sfondo. Il retrieval a livello di patch affronta il problema con la late interaction.
 
 ```text
 score(Q, C) = sum_j max_k similarity(q_j, c_k)
 ```
 
-Per ogni patch query `q_j`, il sistema cerca la patch più simile `c_k` nell'immagine candidata. Le 256 similarità migliori vengono poi sommate. Nell'esempio analizzato, il punteggio MaxSim risultante è `216.3`.
+Per ogni patch query `q_j`, il sistema cerca la patch più simile `c_k` nell'immagine candidata. Le 256 similarità migliori vengono poi sommate.
 
-La matrice di similarità rende visibile il calcolo. Ogni riga rappresenta una patch della query e ogni colonna una patch dell'immagine del corpus. Il massimo scelto su ogni riga mostra quale regione del candidato spiega meglio quella regione della query. Il punteggio finale nasce quindi da molte corrispondenze locali, non da un unico vettore aggregato.
+![Matrice di similarità patch-to-patch con massimi MaxSim](/images/projects/sliders/09_maxsim_matrix.png)
 
-Lo steering viene applicato alle patch della query prima della ricerca MaxSim. Una direzione associata al tessuto giallo può modificare i descrittori locali rilevanti, mentre le altre patch continuano a conservare forma, texture e contesto.
+Ogni riga rappresenta una patch della query e ogni colonna una patch dell'immagine del corpus. Il massimo selezionato su ogni riga mostra quale regione del candidato spiega meglio quella regione della query. Nell'esempio analizzato, il punteggio MaxSim è `216.3`.
 
-Per corpus più grandi, l'indice patch usa FAISS e può passare a IVF-PQ oltre una soglia configurabile. L'indice recupera prima patch candidate, le riconduce agli identificatori delle immagini e calcola MaxSim esatto solo sulle immagini candidate. Questo rende la late interaction gestibile senza confrontare ogni possibile coppia di patch.
+![Immagine query seguita dai risultati migliori secondo MaxSim](/images/projects/sliders/10_maxsim_retrieval.png)
+
+Lo steering viene applicato alle patch della query prima della ricerca MaxSim. Per corpus più grandi, FAISS recupera prima le patch candidate, le riconduce alle immagini e calcola MaxSim esatto solo sui candidati. L'indice può passare a IVF-PQ oltre una soglia configurabile.
 
 ## Similarità densa e significato sparso
 
-Il sistema mantiene due rappresentazioni complementari.
+Lo spazio DINOv2 resta il segnale principale per la similarità visiva generale. Lo spazio SAE è più interpretabile e contiene le direzioni degli slider. SLIDERS può combinare un indice FAISS denso, un indice opzionale sulle attivazioni SAE e vettori precomputati per il reranking.
 
-Lo spazio DINOv2 originale resta il segnale più forte per la similarità visiva generale. Lo spazio SAE è più interpretabile e contiene le direzioni controllate dagli slider. SLIDERS può quindi combinare:
-
-1. un indice FAISS sugli embedding DINOv2;
-2. un indice opzionale sulle attivazioni SAE normalizzate;
-3. vettori di attivazione precomputati usati nel reranking.
-
-Le liste provenienti dagli indici denso e sparso possono essere unite, normalizzate e riordinate in base alle feature attive. Questo è utile quando una direzione è semanticamente chiara nello spazio SAE ma non produce da sola uno spostamento abbastanza forte nello spazio denso.
-
-Le metriche di steering vengono calcolate prima di questo reranking compensativo. In caso contrario, una regola di reranking forte potrebbe nascondere una direzione debole e far sembrare l'interfaccia più fedele di quanto sia realmente la rappresentazione.
+Le metriche di steering vengono calcolate prima del reranking compensativo, così una regola forte non può nascondere una direzione debole.
 
 ## Valutare un sistema di retrieval controllabile
 
-Recall, precision e mean average precision restano necessari, ma non dicono se uno slider funziona.
+Recall, precision e mean average precision non dicono se uno slider funziona. Ho quindi separato la valutazione in quattro proprietà.
 
-Ho separato la valutazione in quattro proprietà aggiuntive.
+**Faithfulness** misura se lo steering aumenta davvero la feature richiesta rispetto alla baseline.
 
-### Faithfulness
+**Isotonicity** misura se valori maggiori dello slider producono effetti maggiori, tramite correlazione di Spearman.
 
-La faithfulness misura se lo steering aumenta davvero la feature richiesta nei risultati. Confronta l'attivazione target dopo lo steering con la baseline senza steering. Diverse direzioni apprese producono incrementi moltiplicativi elevati, soprattutto quelle legate a punte verdi, venature chiare e lesioni scure.
+**Selectivity** misura se cambia soprattutto la feature target invece di alterare indiscriminatamente l'embedding.
 
-### Isotonicity
+**Monosemanticity** stima se una feature nominata corrisponde ripetutamente allo stesso pattern visibile attraverso la purezza delle patch più attive.
 
-L'isotonicity verifica che valori maggiori dello slider producano effetti maggiori. La misuro con la correlazione di Spearman tra `α` e l'attivazione media della feature target nei risultati. Un punteggio alto indica un controllo prevedibile invece di salti casuali tra regioni non correlate dello spazio.
+![Faithfulness, isotonicity, selectivity e monosemanticity delle feature apprese](/images/projects/sliders/16_metric_distributions.png)
 
-### Selectivity
-
-Uno slider dovrebbe influenzare la feature desiderata più delle altre. La selectivity misura la quota on-target del cambiamento di attivazione. Serve a distinguere un controllo realmente specifico da uno che sembra efficace soltanto perché altera in modo ampio l'embedding.
-
-### Monosemanticity
-
-Una unità nominata dovrebbe corrispondere ripetutamente allo stesso pattern visibile. La monosemanticity viene stimata tramite la purezza delle patch con attivazione più alta. Le feature migliori raggiungono una purezza elevata, mentre quelle più deboli mostrano dove il dizionario sta ancora mescolando concetti differenti.
-
-Queste metriche evidenziano un compromesso che le metriche classiche non mostrano. Una feature può essere visivamente coerente ma troppo debole per cambiare il ranking. Un'altra può spostare molto i risultati ma influenzare più concetti contemporaneamente. Uno slider utile deve essere sia interpretabile sia controllabile.
+Queste metriche mostrano compromessi che le metriche classiche non evidenziano. Una feature può essere coerente ma troppo debole per spostare il ranking; un'altra può essere forte ma poco selettiva.
 
 ## Il ruolo dell'interfaccia
 
-Il frontend non è soltanto un involucro per il modello. Espone gli strumenti necessari per ispezionare il comportamento:
+Il frontend consente di caricare la query, applicare steering positivo e negativo, ispezionare esempi forti e deboli, combinare assi e aprire i risultati a piena risoluzione.
 
-- caricare o sostituire l'immagine query;
-- applicare steering positivo e negativo;
-- vedere gli esempi con attivazione più alta e più bassa;
-- confrontare combinazioni di assi;
-- aprire i risultati a piena risoluzione;
-- copiare o scaricare il file originale;
-- resettare la query senza ricaricare il modello.
+![Vista di dettaglio di una feature nell'interfaccia](https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider2.gif)
 
-![Modale di ispezione di un risultato](https://raw.githubusercontent.com/Andrei-Stefan20/SLIDERS/main/docs/assets/slider3.gif)
-
-FastAPI serve gli endpoint e il frontend statico. All'avvio vengono caricati encoder, checkpoint SAE, nomi delle feature, percorsi delle immagini, matrici di attivazione e indici FAISS in uno stato condiviso. Le richieste devono quindi eseguire solo encoding e retrieval, senza ricostruire ogni volta le risorse del modello.
+FastAPI serve gli endpoint e il frontend statico. All'avvio vengono caricati encoder, checkpoint SAE, nomi delle feature, percorsi delle immagini, matrici di attivazione e indici FAISS in uno stato condiviso.
 
 ## Stato attuale del progetto
 
-SLIDERS non dimostra che ogni feature sparse sia automaticamente un buon controllo utente. Alcune unità restano miste, alcuni nomi sono più affidabili di altri e valori molto alti degli slider possono saturare. Il retrieval a livello di patch richiede inoltre più memoria e calcolo rispetto alla ricerca con un solo vettore per immagine.
+SLIDERS non dimostra che ogni feature sparse sia automaticamente un buon controllo utente. Alcune unità restano miste, alcuni nomi sono più affidabili di altri e valori molto alti possono saturare. Il retrieval a livello di patch richiede inoltre più memoria e calcolo rispetto alla ricerca con un solo vettore per immagine.
 
 Il progetto offre però un percorso completo dalla rappresentazione all'interazione:
 
@@ -218,6 +197,4 @@ immagini
   -> metriche di faithfulness e interpretabilità
 ```
 
-La scelta più importante è stata evitare di trattare l'interpretabilità come una spiegazione grafica aggiunta dopo il retrieval. La stessa feature sparse viene usata in tre punti: si attiva su un'evidenza locale, riceve un nome da quell'evidenza e modifica la query attraverso la propria direzione del decoder.
-
-È questo oggetto condiviso a collegare il modello all'interfaccia. Lo slider non è un controllo arbitrario associato a una regola. È una direzione appresa di cui si possono osservare esempi, posizione, effetto e limiti.
+La stessa feature sparse viene usata in tre punti: si attiva su un'evidenza locale, riceve un nome da quell'evidenza e modifica la query attraverso la propria direzione del decoder. È questo oggetto condiviso a collegare il modello all'interfaccia.
