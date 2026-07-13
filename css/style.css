@@ -107,7 +107,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .item.item-no-image { grid-template-columns: 1fr; padding-left: 0; padding-right: 0; }
 .item-thumb { width: 180px; height: 120px; object-fit: cover; border-radius: 3px; background: var(--thumb-bg); transition: opacity .2s; }
 .item > a:hover .item-thumb { opacity: .82; }
-.item-title { font-size: 18px; font-weight: bold; }
+.item-title { min-width: 0; font-size: 18px; font-weight: bold; }
 .item-heading { display: flex; justify-content: space-between; gap: 15px; align-items: baseline; }
 .item-heading > span { color: var(--muted); font: 12px var(--mono); }
 .item-desc { color: var(--fg); font-size: 15px; margin: 4px 0; }
@@ -125,7 +125,13 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .blog-item h3 { font-size: 18px; }
 .blog-item p { margin-bottom: 8px; }
 .writing-list { background: var(--bg); border-top: 1px solid var(--border); }
-.writing-item, .entry-row { display: grid; grid-template-columns: 105px 1fr 30px; gap: 22px; align-items: start; padding: 22px 10px; border-bottom: 1px solid var(--border); }
+.writing-item, .entry-row { display: grid; grid-template-columns: 105px minmax(0, 1fr) 30px; gap: 22px; align-items: start; padding: 22px 10px; border-bottom: 1px solid var(--border); }
+.writing-item.writing-with-image { grid-template-columns: 112px 92px minmax(0, 1fr) 30px; }
+.writing-item .entry-thumb-link { grid-column: 1; }
+.writing-item .entry-thumb { width: 112px; height: 76px; object-fit: cover; border-radius: 3px; background: var(--thumb-bg); }
+.writing-item.writing-with-image time { grid-column: 2; }
+.writing-item.writing-with-image > div { grid-column: 3; min-width: 0; }
+.writing-item.writing-with-image > .writing-arrow { grid-column: 4; }
 .writing-item time, .entry-row time { color: var(--muted); font: 12px/1.5 var(--mono); padding-top: 4px; }
 .writing-topic { color: var(--muted); font: 12px/1.5 var(--mono); letter-spacing: .03em; text-transform: uppercase; margin-bottom: 5px !important; }
 .writing-item h2, .writing-item h3 { line-height: 1.3; margin-bottom: 7px; }
@@ -192,18 +198,28 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
   .intro-text { font-size: 16px; }
   .item { grid-template-columns: 125px 1fr; gap: 16px; padding-left: 0; padding-right: 0; }
   .item-thumb { width: 125px; height: 90px; }
-  .writing-item, .entry-row { grid-template-columns: 85px 1fr 24px; gap: 12px; padding-left: 0; padding-right: 0; }
+  .writing-item, .entry-row { grid-template-columns: 85px minmax(0, 1fr) 24px; gap: 12px; padding-left: 0; padding-right: 0; }
+  .writing-item.writing-with-image { grid-template-columns: 96px 74px minmax(0, 1fr) 24px; }
+  .writing-item .entry-thumb { width: 96px; height: 68px; }
 }
 
 @media screen and (max-width: 460px) {
   .site-nav { font-size: 14px; }
   .item { grid-template-columns: 1fr; }
   .item-thumb { width: 100%; height: 170px; }
+  .item-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .item-heading > span { white-space: nowrap; }
   .page-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
   .writing-item, .entry-row { grid-template-columns: 1fr 24px; }
   .writing-item time, .entry-row time { grid-column: 1 / -1; padding: 0; margin-bottom: -7px; }
   .writing-arrow { grid-column: 2; grid-row: 2; }
   .writing-item > div, .entry-row > div { grid-column: 1; grid-row: 2; }
+  .writing-item.writing-with-image { grid-template-columns: minmax(0, 1fr) 24px; gap: 12px; }
+  .writing-item.writing-with-image .entry-thumb-link { grid-column: 1 / -1; grid-row: 1; }
+  .writing-item.writing-with-image .entry-thumb { width: 100%; height: 180px; }
+  .writing-item.writing-with-image time { grid-column: 1; grid-row: 2; padding: 0; margin-bottom: -7px; }
+  .writing-item.writing-with-image > div { grid-column: 1; grid-row: 3; }
+  .writing-item.writing-with-image > .writing-arrow { grid-column: 2; grid-row: 3; }
   .footer-columns { flex-direction: column; gap: 0; }
   .footer-links { justify-content: flex-start; }
   .archive-year { grid-template-columns: 1fr; }
