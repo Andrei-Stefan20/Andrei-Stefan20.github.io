@@ -14,119 +14,103 @@ technologies: [PyTorch, ResNet-50, Qwen-VL, Vision Transformers, CNN, Feature Di
 code: "https://github.com/Fabb-24/ResNet-to-ViT-Feature-Distillation"
 demo: ""
 paper: ""
-excerpt: "Può una rete convoluzionale sostituire il Vision Transformer dentro un moderno Vision-Language Model? Ho costruito una pipeline di feature distillation che insegna a ResNet-50 a produrre gli embedding visivi attesi da Qwen."
+excerpt: "Una pipeline di feature distillation per sostituire il visual encoder di Qwen con ResNet-50, mantenendo invariato il Language Model."
 ---
 
-I Vision-Language Models vengono spesso presentati come sistemi enormi in cui ogni componente sembra intoccabile. Un'immagine entra da una parte, una risposta testuale esce dall'altra e tutto quello che succede nel mezzo finisce per sembrare una scatola nera.
+Questo progetto nasce da una domanda precisa: **è possibile sostituire il Vision Transformer di Qwen con ResNet-50 senza modificare il Language Model?**
 
-Io ho voluto togliere uno di quei pezzi e vedere cosa si sarebbe rotto.
+Il punto non era confrontare genericamente CNN e Transformer. Volevo mantenere invariata l'interfaccia visiva di Qwen e verificare se un backbone convoluzionale, insieme a un adapter addestrabile, potesse produrre embedding compatibili con quelli del visual encoder originale.
 
-Qwen usa normalmente un Vision Transformer per trasformare l'immagine in una sequenza di embedding. La domanda che mi sono posto era se quell'encoder fosse davvero indispensabile oppure se al Language Model interessasse soprattutto ricevere la rappresentazione corretta nel punto di contatto.
+Qwen si aspetta una sequenza con forma `[B, 196, 2048]`. ResNet-50, invece, restituisce mappe di feature gerarchiche con risoluzioni e numero di canali differenti. Il progetto consiste quindi nel trasformare più feature map della CNN in una sequenza di token che il modello linguistico possa usare senza essere riaddestrato.
 
-Così ho provato a sostituirlo con ResNet-50.
-
-Non riaddestrando da zero tutto il modello multimodale e non modificando la parte linguistica. L'idea era lasciare Qwen invariato e insegnare a un nuovo percorso visivo a produrre qualcosa di abbastanza vicino agli embedding originali del ViT.
-
-## Il vero progetto era l'adapter
+## Architettura della pipeline
 
 ![Adapter multi-stage che collega ResNet-50 a Qwen](/images/projects/resnet-vit/adapter2.png)
 
-Sostituire un encoder con un altro richiede pochissimo codice. Rendere il nuovo encoder compatibile con il resto del modello è il punto in cui inizia il lavoro vero.
+La pipeline personalizzata contiene tre parti:
 
-Un Vision Transformer produce una sequenza piatta di token visivi. ResNet-50 produce mappe di feature gerarchiche con risoluzioni e profondità diverse. I primi livelli conservano bordi, texture e dettagli locali, mentre quelli più profondi contengono informazioni più astratte e semantiche.
+1. **ResNet-50**, usata come backbone visivo;
+2. **un adapter multi-stage**, che raccoglie feature da più livelli della rete;
+3. **il Language Model di Qwen**, lasciato invariato.
 
-Le due architetture non producono soltanto tensori con forme differenti. Descrivono l'immagine in modi completamente diversi.
+Non ho usato soltanto l'ultimo layer di ResNet. I livelli iniziali conservano dettagli locali, bordi e texture; quelli più profondi descrivono meglio la struttura semantica dell'immagine, ma hanno una risoluzione spaziale inferiore. L'adapter combina entrambe le informazioni.
 
-L'adapter è diventato il traduttore tra i due sistemi.
+Ogni feature map viene prima proiettata in uno spazio con dimensioni compatibili. Le mappe vengono poi ridimensionate e fuse progressivamente. I blocchi finali trasformano la rappresentazione spaziale in 196 token da 2048 dimensioni.
 
-Riceve feature da più stage di ResNet, le proietta in spazi compatibili, fonde informazione locale e semantica e infine converte il risultato nella sequenza esatta richiesta da Qwen.
+Il vincolo sulla forma è necessario, ma non rappresenta da solo il risultato. Due tensori con forma `[B, 196, 2048]` possono contenere informazioni completamente diverse. Per questo l'obiettivo del training non era soltanto produrre l'output corretto dal punto di vista dimensionale, ma avvicinarsi allo spazio latente del ViT originale.
 
-Il contratto sull'output è rigido. Il Language Model si aspetta un tensore con forma `[B, 196, 2048]`. Avere le stesse dimensioni è necessario, ma non basta. La rappresentazione deve anche conservare la struttura latente che Qwen ha imparato durante il training multimodale originale.
+## Feature distillation
 
-## Distillare una rappresentazione, non una semplice etichetta
+Il Vision Transformer di Qwen viene usato come teacher.
 
-Il Vision Transformer originale di Qwen veniva usato come teacher.
+Per ogni immagine, il visual encoder originale produce una sequenza di embedding. Questi tensori vengono salvati e usati come target. La stessa immagine viene elaborata da ResNet-50; le sue feature passano attraverso l'adapter, che produce la sequenza student.
 
-Ogni immagine veniva prima elaborata dall'encoder visivo nativo e gli embedding risultanti venivano salvati. La stessa immagine passava poi attraverso ResNet-50, mentre l'adapter cercava di ricostruire la rappresentazione del teacher partendo dalle feature della CNN.
+La prima loss utilizzata è il Mean Squared Error:
 
-Il primo obiettivo minimizzava il Mean Squared Error tra gli embedding originali e quelli ricostruiti.
+```text
+L = MSE(E_student, E_teacher)
+```
 
-Questo cambia completamente la natura del problema. Il modello non sta imparando direttamente se in un'immagine ci sia un carro armato, un animale o un edificio. Sta imparando il modo in cui Qwen rappresenta internamente quell'immagine prima ancora di generare una parola.
+Dove `E_teacher` è l'output del ViT originale ed `E_student` è l'output prodotto da ResNet-50 e adapter.
 
-È proprio la parte che mi ha interessato di più. Un tensore può avere la forma corretta ed essere comunque inutile se l'informazione al suo interno vive nella geometria sbagliata.
+Questa configurazione separa il problema di allineamento dal task finale. Il modello non viene addestrato direttamente su caption o classi. Impara invece a ricostruire la rappresentazione visiva che Qwen utilizza prima della generazione del testo.
 
-## Quattro versioni invece di un'unica architettura enorme
+## Le quattro versioni dell'adapter
 
-Non volevo costruire subito un adapter molto complesso e poi non riuscire più a capire quale parte avesse davvero aiutato.
+Ho sviluppato quattro varianti per capire quali componenti contribuissero davvero al mapping.
 
-Il progetto è quindi passato attraverso quattro versioni principali.
+**V1** usa proiezioni `1×1` e fusione convoluzionale. È la baseline più semplice e serve a verificare se le feature di ResNet contengano informazione sufficiente per approssimare gli embedding del ViT.
 
-La prima era una baseline convoluzionale basata su blocchi di proiezione e fusione. Serviva prima di tutto a verificare che il mapping fosse possibile.
+**V2** aggiunge un Transformer Encoder dopo la fusione. Le convoluzioni elaborano bene il contesto locale, ma non modellano direttamente le dipendenze tra regioni lontane dell'immagine. Il Transformer introduce questa componente globale.
 
-La seconda aggiungeva un Transformer Encoder dopo la fusione delle feature per recuperare una parte delle interazioni globali disponibili naturalmente in un ViT.
+**V3** modifica la fusione convoluzionale usando kernel `3×3`. Rispetto alle proiezioni puntuali, consente a ogni posizione di utilizzare anche il vicinato spaziale.
 
-La terza si concentrava maggiormente sul contesto spaziale locale e migliorava la fusione convoluzionale.
+**V4** combina il kernel `3×3` con il Transformer Encoder. È la versione più completa: prima rafforza il contesto locale, poi modella le interazioni globali tra i token.
 
-La quarta combinava entrambe le idee, con un'elaborazione locale più forte e un ragionamento globale basato su Transformer.
+Questa progressione permette di distinguere il contributo della fusione spaziale da quello dell'attenzione globale, invece di aggiungere tutti i componenti in una sola architettura.
 
-Questo percorso è stato più utile che partire direttamente dal modello più grande. Ogni versione rispondeva a una domanda leggermente diversa su ciò che mancava davvero all'adapter.
-
-## Cosa succede davvero ai tensori
+## Flusso dei tensori
 
 ![Architettura dettagliata dell'adapter e dimensioni dei tensori](/images/projects/resnet-vit/adapter_architecture.png)
 
-ResNet produce più mappe di feature con risoluzioni spaziali e profondità dei canali differenti. Non si possono semplicemente concatenare e passare al modello sperando che funzioni.
+ResNet produce feature map a più risoluzioni. L'adapter le elabora in questo ordine:
 
-Ogni stage viene prima proiettato in una rappresentazione compatibile. Le feature a risoluzione maggiore conservano più struttura locale, mentre quelle più profonde contribuiscono con informazione più astratta. Il percorso di fusione combina progressivamente questi segnali fino a ottenere una singola rappresentazione visiva.
+- proiezione dei canali;
+- allineamento delle risoluzioni spaziali;
+- fusione tra feature superficiali e profonde;
+- compressione della dimensione spaziale;
+- conversione finale in una sequenza di token.
 
-I blocchi finali trasformano quella rappresentazione in 196 token visivi, ciascuno con dimensionalità 2048.
+Il risultato deve mantenere l'ordine e la dimensionalità richiesti da Qwen. Non ho modificato il modello linguistico per accettare un formato diverso: tutta la compatibilità viene gestita dal nuovo percorso visivo.
 
-Questa interfaccia precisa ha mantenuto l'esperimento ben definito. Non ho riprogettato Qwen attorno a ResNet. Erano ResNet e l'adapter a doversi adattare al modello già esistente.
+## Strategia di training
 
-## Addestrare l'intero percorso visivo
+La prima fase mantiene ResNet congelata e ottimizza soltanto l'adapter. In questo modo l'adapter lavora su feature stabili e il training è più controllabile.
 
-Nella prima fase ResNet rimaneva congelato e veniva ottimizzato soltanto l'adapter.
+Nella seconda fase vengono ottimizzati insieme backbone e adapter, ma con learning rate differenti. ResNet usa un learning rate più basso per evitare di alterare rapidamente le feature apprese su ImageNet; l'adapter mantiene un learning rate maggiore.
 
-In questo modo il livello di traduzione riceveva una distribuzione di input stabile. ResNet continuava a produrre le feature apprese con il pretraining su ImageNet, mentre l'adapter imparava a trasformarle nello spazio del teacher.
+Dopo il fine-tuning congiunto, una breve fase adapter-only permette di riallineare l'output al teacher con il backbone ormai aggiornato.
 
-Quando il mapping diventava abbastanza ragionevole, ho sperimentato anche il fine-tuning congiunto. ResNet e adapter venivano allenati insieme usando learning rate differenti, più piccolo per il backbone e maggiore per l'adapter.
+La pipeline include anche l'estrazione preventiva degli embedding del teacher, la valutazione tramite MSE e l'inferenza usando il visual encoder personalizzato.
 
-A questa fase seguiva un'ulteriore rifinitura del solo adapter.
-
-Lo scopo era lasciare al backbone un po' di libertà per muoversi verso rappresentazioni più facili da tradurre senza distruggere immediatamente le feature utili del pretraining.
-
-## Guardare un'immagine reale
+## Controllo qualitativo
 
 ![Carro armato usato come esempio qualitativo di inferenza](/images/projects/resnet-vit/tank.jpg)
 
-Questa immagine è utile perché combina diversi elementi visivi difficili nello stesso momento: linee nette, cingoli, testo, componenti meccaniche e uno sfondo relativamente complesso.
+L'immagine del carro armato combina testo, bordi netti, componenti meccaniche, cingoli e uno sfondo complesso. È utile per controllare se la rappresentazione conserva sia il concetto generale dell'oggetto sia i dettagli locali necessari a descriverlo.
 
-Una rappresentazione debole potrebbe conservare soltanto il concetto generale di “veicolo”, perdendo però i dettagli locali necessari per una descrizione più precisa. L'adapter deve quindi mantenere sia la semantica ad alto livello sia abbastanza struttura spaziale perché il Language Model possa usarla.
+Non è una valutazione quantitativa. Serve a confrontare il comportamento del visual encoder originale e di quello personalizzato su un input con strutture visive diverse tra loro.
 
-L'immagine non è un benchmark da sola. È un controllo qualitativo che rende alcuni fallimenti molto più facili da notare.
+## Limiti e sviluppi successivi
 
-## La parte difficile non è far combaciare le dimensioni
+L'MSE è un obiettivo diretto, ma non garantisce che tutte le relazioni semantiche presenti nello spazio del teacher vengano preservate. Due embedding possono essere vicini numericamente e produrre comunque differenze nel testo generato.
 
-Uno degli errori più semplici in un progetto del genere è trattare la compatibilità come un problema puramente dimensionale.
+Le estensioni più utili sarebbero:
 
-Se Qwen si aspetta `[B, 196, 2048]`, produrre `[B, 196, 2048]` può sembrare un successo. Non lo è.
+- una loss basata sulla similarità coseno;
+- allineamento contrastivo tra immagini;
+- distillazione layer-wise o token-wise;
+- valutazione su captioning e visual question answering;
+- confronto tra qualità dell'output, numero di parametri e costo di inferenza.
 
-Due tensori possono avere dimensioni identiche e rappresentare cose completamente diverse. Immagini simili dovrebbero occupare regioni sensate, le relazioni tra token dovrebbero restare coerenti e il Language Model dovrebbe continuare a estrarre informazione utile dalla sequenza.
-
-L'MSE è un buon punto di partenza perché spinge direttamente la rappresentazione student verso quella del teacher. Non garantisce però che tutte le relazioni semantiche importanti vengano conservate.
-
-È qui che i prossimi esperimenti diventano interessanti. Obiettivi basati sulla similarità coseno potrebbero concentrarsi più sulla direzione che sulla magnitudine. Un allineamento contrastivo potrebbe conservare meglio le relazioni tra immagini. Loss downstream potrebbero ottimizzare captioning o visual question answering invece dei soli tensori intermedi.
-
-## Cosa mi porto dietro
-
-Prima di lavorare a questo progetto pensavo soprattutto al Vision Transformer come al componente che permetteva a Qwen di capire le immagini.
-
-Dopo averci lavorato ho iniziato a guardare molto di più al confine tra la parte visiva e quella linguistica.
-
-Il Language Model non vede pixel. Vede tensori prodotti da un altro componente.
-
-Questo non rende il problema semplice. Far combaciare le dimensioni è banale rispetto al mantenere la struttura latente che il modello ha imparato a interpretare. Però, una volta isolata l'interfaccia, componenti che sembravano fissi diventano improvvisamente aperti alla sperimentazione.
-
-Per me è questo il risultato più importante del progetto.
-
-Non è soltanto una CNN che sostituisce un Transformer. È un tentativo di collegare due sistemi di rappresentazione molto diversi senza dover ricostruire tutto il resto attorno a loro.
+Il risultato principale del progetto non è dimostrare che ResNet-50 sia già un sostituto completo del ViT. È aver costruito una pipeline modulare con cui misurare quanto una CNN possa avvicinarsi all'interfaccia latente richiesta da un Vision-Language Model.
