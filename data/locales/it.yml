@@ -6,7 +6,7 @@ navigation:
       url: "/it/about/"
     - title: "Progetti"
       url: "/it/work/"
-    - title: "Scritti"
+    - title: "Articoli"
       url: "/it/writing/"
     - title: "Archivio"
       url: "/it/archive/"
@@ -14,74 +14,76 @@ navigation:
   cv: "CV"
 
 about:
-  - "Sono un Full-Stack Developer e studente magistrale in Intelligenza Artificiale all'Università di Bari."
-  - "Il mio lavoro spazia tra ingegneria del software, machine learning e ricerca sull'IA. Mi interessano in particolare i modelli linguistici di grandi dimensioni, i knowledge graph e la costruzione di sistemi software affidabili."
-  - "Qui trovi una selezione dei progetti a cui ho lavorato durante il mio percorso accademico e professionale."
+  - "Sono uno sviluppatore full-stack e uno studente magistrale in Intelligenza Artificiale all'Università di Bari."
+  - "Lavoro tra ingegneria del software, machine learning e ricerca sull'IA, con un interesse particolare per i modelli linguistici, i knowledge graph e i sistemi software affidabili."
+  - "Qui raccolgo una selezione dei progetti e degli articoli nati dal mio percorso accademico, professionale e personale."
 
 about_page:
   title: "Chi sono"
-  intro: "Costruisco software e studio intelligenza artificiale, con un'attenzione particolare a sistemi pratici che siano chiari, affidabili e utili."
+  intro: "Costruisco software e studio intelligenza artificiale, concentrandomi su sistemi pratici, chiari e affidabili."
   sections:
     - title: "Percorso"
       paragraphs:
-        - "Sono un Full-Stack Developer e studente magistrale in Intelligenza Artificiale all'Università di Bari. Il mio percorso accademico unisce le basi dell'informatica allo studio dei moderni sistemi di IA."
-        - "Mi piace muovermi tra teoria e implementazione: capire un problema a fondo, progettare una soluzione chiara e trasformarla in software utilizzabile."
+        - "Sono uno sviluppatore full-stack e uno studente magistrale in Intelligenza Artificiale all'Università di Bari. Il mio percorso unisce solide basi informatiche allo studio dei sistemi di IA moderni."
+        - "Mi piace passare dalla teoria all'implementazione: capire bene un problema, progettare una soluzione essenziale e trasformarla in software realmente utilizzabile."
     - title: "Di cosa mi occupo"
       paragraphs:
-        - "I miei interessi includono ingegneria del software, machine learning, modelli linguistici di grandi dimensioni e knowledge graph. Mi interessa in particolare come queste tecnologie possano diventare prodotti affidabili e comprensibili."
-        - "Attraverso progetti accademici e personali lavoro con servizi backend, applicazioni web, pipeline di dati e funzionalità basate sull'IA."
-    - title: "Come affronto i progetti"
+        - "I miei interessi includono ingegneria del software, machine learning, modelli linguistici di grandi dimensioni e knowledge graph. Mi interessa soprattutto capire come combinarli in prodotti affidabili e comprensibili."
+        - "Nei progetti accademici e personali lavoro con servizi backend, applicazioni web, pipeline di dati e funzionalità basate sull'intelligenza artificiale."
+    - title: "Come lavoro"
       paragraphs:
-        - "Valorizzo interfacce semplici, codice manutenibile e risultati misurabili. Preferisco partire dal problema reale dell'utente o della ricerca, scegliendo poi la soluzione tecnica più piccola che lo risolve bene."
+        - "Cerco interfacce semplici, codice manutenibile e risultati misurabili. Parto dal problema reale, poi scelgo la soluzione tecnica più piccola che riesca a risolverlo bene."
 
 home:
   about_title: "Chi sono"
   recent_title: "Ultimi progetti e articoli"
-  recent_intro: "I progetti e gli articoli più recenti, in ordine di data."
+  recent_intro: "Una selezione dei contenuti pubblicati più di recente."
   archive_link: "Vai all'archivio →"
   archive_url: "/it/archive/"
 
 work:
   title: "Progetti"
-  intro: "Lavori accademici e professionali selezionati."
+  intro: "Una selezione di lavori accademici, professionali e personali."
   count_label: "PROGETTI"
   default_role_label: "RUOLO"
   code_label: "Codice ↗"
-  demo_label: "Demo live ↗"
+  demo_label: "Demo ↗"
   paper_label: "Paper ↗"
   project_label: "Progetto"
-  empty: "Nessun progetto pubblicato ancora."
+  empty: "Non ci sono ancora progetti pubblicati."
 
 writing:
-  title: "Scritti"
-  intro: "Note su intelligenza artificiale e ingegneria del software."
+  title: "Articoli"
+  intro: "Approfondimenti su intelligenza artificiale, ricerca e ingegneria del software."
   count_label: "ARTICOLI"
   default_category: "Note"
   read_suffix: "min"
 
 archive:
-  title: "Archivio articoli"
-  intro: "Tutti gli articoli in ordine cronologico inverso."
-  empty: "Nessun articolo pubblicato ancora."
+  title: "Archivio"
+  intro: "Tutti i progetti e gli articoli, raccolti in un unico posto."
+  empty: "Non ci sono ancora contenuti pubblicati."
   article_label: "Articolo"
 
 search:
   title: "Cerca"
-  intro: "Cerca progetti e articoli."
-  topics_title: "Sfoglia per argomento"
+  intro: "Cerca tra progetti e articoli."
+  topics_title: "Esplora per argomento"
 
 content:
-  case_study_label: "CASE STUDY"
-  writing_label: "Scritti"
+  case_study_label: "CASO DI STUDIO"
+  writing_label: "Articoli"
   read_aria_prefix: "Leggi"
 
 accessibility:
   profile_photo_suffix: "foto profilo"
   project_preview_suffix: "anteprima"
-  theme_toggle: "Cambia tra tema chiaro e scuro"
-  background_toggle: "Cambia sfondo"
-  font_toggle: "Attiva/disattiva font scritto a mano"
-  language_switch_prefix: "Vedi in"
+  menu_open: "Apri il menu"
+  main_navigation: "Navigazione principale"
+  theme_toggle: "Cambia tema chiaro o scuro"
+  background_toggle: "Cambia motivo dello sfondo"
+  font_toggle: "Attiva o disattiva il carattere scritto a mano"
+  language_switch_prefix: "Visualizza in"
 
 footer:
   github: "GitHub"
@@ -92,6 +94,6 @@ footer:
 
 errors:
   not_found_code: "ERRORE 404"
-  not_found_title: "Pagina non trovata."
-  not_found_text: "Il contenuto potrebbe essere stato spostato o rimosso."
+  not_found_title: "Pagina non trovata"
+  not_found_text: "Il contenuto potrebbe essere stato spostato oppure rimosso."
   home_link: "← Torna alla home"
