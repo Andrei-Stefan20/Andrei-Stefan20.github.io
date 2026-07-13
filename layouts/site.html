@@ -12,9 +12,11 @@
         var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
         var storedBg = localStorage.getItem('bg-pattern');
-        if (storedBg) document.documentElement.setAttribute('data-bg', storedBg);
+        var defaultBg = '{{ site.appearance.background_pattern | default: "none" }}';
+        if (storedBg || defaultBg !== 'none') document.documentElement.setAttribute('data-bg', storedBg || defaultBg);
         var storedFont = localStorage.getItem('font-style');
-        if (storedFont) document.documentElement.setAttribute('data-font', storedFont);
+        var defaultFont = '{{ site.appearance.font_style | default: "default" }}';
+        if ((storedFont || defaultFont) === 'hand') document.documentElement.setAttribute('data-font', 'hand');
       } catch (e) {}
     })();
   </script>

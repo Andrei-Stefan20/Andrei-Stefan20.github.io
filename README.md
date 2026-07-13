@@ -95,7 +95,11 @@ The `date` field automatically sets the position on the home page and list pages
 
 ### Editor tool
 
-`tools/write.html` is a standalone page (not part of the built site) that generates these files for you: pick type and language, fill in the fields, write the body with a markdown toolbar, then download the ready-to-use `.md` file and drop it into `entries/`. Open it directly in a browser, no build step required.
+The tools are static HTML pages: open `tools/write.html` to create content in `entries/` and `tools/configure.html` to edit `config.yml`. Choose the repository folder when prompted; no local server or Node.js is required.
+
+### Configuration tool
+
+The tools require the local server because a browser page cannot safely write files inside a GitHub repository by itself.
 
 ## Adding an article
 
@@ -147,6 +151,52 @@ ruby scripts/sync_repository.rb --check
 
 Rename `CNAME.example` to `CNAME`, enter the domain, and configure it in **Settings → Pages** too. Update `url` and `baseurl` in `config.yml`.
 
+## Search
+
+`/archive/` includes a built-in search box (via [Pagefind](https://pagefind.app)) and, when articles have different `category` values, a row of topic pills above it — click one to search by that topic. Pagefind indexes the site after every build; the GitHub Actions workflow (`.github/workflows/pages.yml`) already runs it for you. To test search locally:
+
+```bash
+bundle exec jekyll build --config config.yml
+npx pagefind --site _site
+cd _site && python3 -m http.server 4000
+```
+
+Navigation automatically hides "Projects" if there are no projects, and "Writing"/"Archive" if there are no articles (checked per language), so you never link to an empty section.
+
+## Comments
+
+Article and project pages can show [giscus](https://giscus.app) comments, backed by GitHub Discussions. Off by default. To enable:
+
+1. Make sure the repository is public and has Discussions enabled.
+2. Install the [giscus app](https://github.com/apps/giscus) on the repository and get your config values from [giscus.app](https://giscus.app).
+3. In `config.yml`, set:
+
+```yaml
+discussions:
+  enabled: true
+  repo: "username/username.github.io"
+  repo_id: "..."
+  category: "Announcements"
+  category_id: "..."
+```
+
+## Analytics
+
+To add [Plausible Analytics](https://plausible.io), sign up and set your domain in `config.yml`:
+
+```yaml
+analytics:
+  plausible_domain: "yourdomain.com"
+```
+
+Leave it blank to skip analytics entirely (nothing is loaded).
+
+## SEO
+
+- `hreflang` alternate tags are generated automatically for every language, so search engines know translated pages are equivalent.
+- The social preview image (`og:image`) uses each entry's own `image` field, falling back to `logo` in `config.yml` when a page has none. Leave `image` out of an entry's front matter entirely (don't set it to `""`) if it has no picture.
+- The favicon is `images/favicon.svg` — replace it with your own mark; it already adapts to light/dark browser themes.
+
 ## Before publishing
 
 - [ ] Replace all example values in `config.yml`.
@@ -154,6 +204,8 @@ Rename `CNAME.example` to `CNAME`, enter the domain, and configure it in **Setti
 - [ ] Replace the photo, CV, and example content.
 - [ ] Update `robots.txt`, `SECURITY.md`, `LICENSE`, and the links in `.github/`.
 - [ ] Remove the collections and pages you don't want to use.
+- [ ] Replace `images/favicon.svg` with your own mark (optional).
+- [ ] Set up comments and/or analytics if you want them (both optional, off by default).
 - [ ] Check the result on desktop and mobile.
 
 ## License
