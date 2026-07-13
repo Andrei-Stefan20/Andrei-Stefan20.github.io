@@ -5,7 +5,7 @@ layout: case-study
 lang: en
 slug: resnet-vit-distillation
 permalink: /entries/resnet-vit-distillation/
-date: 2026-07-12
+date: 2026-06-24
 year: 2026
 image: "/images/projects/resnet-vit/adapter2.png"
 label: "RESEARCH"
