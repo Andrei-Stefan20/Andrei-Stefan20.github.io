@@ -213,7 +213,9 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
   .writing-item, .entry-row { grid-template-columns: 1fr 24px; }
   .writing-item time, .entry-row time { grid-column: 1 / -1; padding: 0; margin-bottom: -7px; }
   .writing-arrow { grid-column: 2; grid-row: 2; }
-  .writing-item > div, .entry-row > div { grid-column: 1; grid-row: 2; }
+  .writing-item > div { grid-column: 1; grid-row: 2; }
+  .entry-row .entry-side { grid-column: 1 / -1; grid-row: 1; }
+  .entry-row .entry-main { grid-column: 1; grid-row: 2; }
   .writing-item.writing-with-image { grid-template-columns: minmax(0, 1fr) 24px; gap: 12px; }
   .writing-item.writing-with-image .entry-thumb-link { grid-column: 1 / -1; grid-row: 1; }
   .writing-item.writing-with-image .entry-thumb { width: 100%; height: 180px; }
