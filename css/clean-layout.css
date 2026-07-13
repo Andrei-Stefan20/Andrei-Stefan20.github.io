@@ -1,0 +1,35 @@
+hr {
+  display: none;
+}
+
+.site-header,
+.site-footer,
+.comments,
+.section-title,
+.about-section h2,
+.item-list,
+.blog-list,
+.writing-list,
+.recent-list,
+.archive-year,
+.item,
+.blog-item,
+.writing-item,
+.entry-row,
+.archive-item {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.section-title,
+.about-section h2 {
+  padding-bottom: 0;
+}
+
+.item,
+.blog-item,
+.writing-item,
+.entry-row,
+.archive-item {
+  margin-bottom: 8px;
+}
