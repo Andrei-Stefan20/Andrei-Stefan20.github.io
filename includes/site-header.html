@@ -3,7 +3,7 @@
 <header class="site-header">
   <div class="wrapper">
     <a class="site-title" href="{{ site.languages.available | where: 'code', current_lang | map: 'home_url' | first | relative_url }}">{{ site.author.name | default: site.title }}</a>
-    <button type="button" class="nav-toggle" aria-label="{{ t.accessibility.menu_open }}" aria-expanded="false" aria-controls="site-nav">
+    <button type="button" class="nav-toggle" aria-label="{{ t.accessibility.menu_open }}" aria-expanded="false" aria-controls="site-nav" data-open-label="{{ t.accessibility.menu_open }}" data-close-label="{{ t.accessibility.menu_close }}">
       <svg class="icon-menu" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       <svg class="icon-close" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -11,11 +11,12 @@
       <div class="nav-links">
         {% assign lang_project_count = site.pages | where: 'type', 'project' | where: 'lang', current_lang | size %}
         {% assign lang_article_count = site.pages | where: 'type', 'article' | where: 'lang', current_lang | size %}
+        {% assign lang_content_count = lang_project_count | plus: lang_article_count %}
         {% for link in t.navigation.main %}
           {% assign hide_link = false %}
           {% if link.url contains 'work/' and lang_project_count == 0 %}{% assign hide_link = true %}{% endif %}
           {% if link.url contains 'writing/' and lang_article_count == 0 %}{% assign hide_link = true %}{% endif %}
-          {% if link.url contains 'archive/' and lang_article_count == 0 %}{% assign hide_link = true %}{% endif %}
+          {% if link.url contains 'archive/' and lang_content_count == 0 %}{% assign hide_link = true %}{% endif %}
           {% unless hide_link %}<a class="page-link{% if page.url == link.url %} is-current{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>{% endunless %}
         {% endfor %}
         {% if site.author.email and site.author.email != '' %}<a class="page-link" href="mailto:{{ site.author.email }}">{{ t.navigation.contact }}</a>{% endif %}
