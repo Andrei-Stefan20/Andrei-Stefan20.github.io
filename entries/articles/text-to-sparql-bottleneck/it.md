@@ -8,11 +8,11 @@ permalink: /it/entries/text-to-sparql-bottleneck/
 date: 2026-06-22
 category: "Knowledge Graph"
 read_time: 11
-image: "/images/articles/text-to-sparql-bottleneck/hero.png"
-thumbnail: "/images/articles/text-to-sparql-bottleneck/hero.png"
-cover: "/images/articles/text-to-sparql-bottleneck/hero.png"
-cover_alt: "Risultati Text-to-SPARQL che mostrano l'importanza dell'entity linking"
-thumbnail_alt: "Anteprima dell'articolo Text-to-SPARQL"
+image: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+thumbnail: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+cover: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+cover_alt: "Pipeline modulare Text-to-SPARQL"
+thumbnail_alt: "Anteprima della pipeline Text-to-SPARQL"
 excerpt: "Un ablation study sulla generazione Text-to-SPARQL ha mostrato che un entity linking affidabile conta molto più di esempi aggiuntivi, schema hints o prompt sempre più complessi."
 ---
 
@@ -41,8 +41,6 @@ Il valore di questa impostazione non era ottenere soltanto un punteggio finale. 
 La generazione SPARQL viene spesso trattata come un altro problema di generazione strutturata, simile al Text-to-SQL. Il confronto è valido solo in parte.
 
 Un database relazionale espone di solito uno schema limitato e leggibile. Wikidata contiene invece oltre cento milioni di entità e migliaia di proprietà identificate da QID e PID opachi. La domanda non rivela quegli identificatori.
-
-![DBpedia usa nomi leggibili mentre Wikidata usa identificatori numerici opachi](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
 L'ambiguità peggiora ulteriormente il problema. Una stessa espressione può indicare nodi diversi e le API di ricerca tendono a favorire il candidato più popolare, non necessariamente quello corretto nel contesto.
 
@@ -77,11 +75,7 @@ Entrambe le idee sembrano utili. Gli ablation study hanno mostrato che il loro e
 
 Sul test set completo di 394 domande, le configurazioni senza entity linking ottenevano un macro F1 di circa 5–8%. Aggiungendo REBEL, il risultato saliva approssimativamente al 17–20%, a seconda del modello e del prompt.
 
-![Migliori risultati sul dataset completo per modello e strategia di prompting](/images/articles/text-to-sparql-bottleneck/results.png)
-
 Le configurazioni migliori raggiungevano circa il 24–25% di macro F1. GPT-4o beneficiava maggiormente della decomposition, mentre Llama 3.3 70B risultava più forte con self-consistency. Queste strategie contavano, ma soprattutto dopo aver fornito alla pipeline entità plausibili.
-
-![L'entity linking porta il punteggio da circa sei a venti punti prima dei guadagni del prompting](/images/articles/text-to-sparql-bottleneck/linker-gain.png)
 
 Un solo componente produceva un miglioramento di due o tre volte. Tutto il resto insieme aggiungeva soltanto pochi punti.
 
@@ -128,8 +122,6 @@ La versione agentica non dipende soltanto dagli identificatori forniti all'inizi
 
 L'esempio della Emu War mostra la differenza. La query single-shot sceglieva la proprietà sbagliata e non trovava risultati. L'agente esplorava un percorso indiretto, identificava l'evento, ne esaminava i partecipanti e filtrava il risultato fino agli animali.
 
-![Il graph traversal agentico recupera la risposta sulla Emu War verificando identificatori e relazioni](/images/articles/text-to-sparql-bottleneck/react.png)
-
 Questo approccio è più vicino alla ricerca che alla semplice generazione. Il modello non deve ricordare perfettamente il grafo: può verificare le proprie ipotesi sui dati.
 
 ## Il prompt engineering aiutava, ma non eliminava il collo di bottiglia
@@ -143,8 +135,6 @@ I prompt migliori funzionavano perché operavano su input migliori. Una volta di
 ## Confronto con altri sistemi
 
 Il confronto con lavori precedenti deve essere letto con attenzione perché i sistemi usano assunzioni, modelli e metriche diverse. Alcuni sono fine-tuned, altri usano graph search, altri ancora ricevono entità gold.
-
-![Confronto con altri sistemi Text-to-SPARQL in condizioni sperimentali differenti](/images/articles/text-to-sparql-bottleneck/comparison.png)
 
 Il confronto più interessante non è la posizione assoluta in classifica. È ciò che accade quando si rimuovono le entità gold. Sistemi apparentemente molto più forti perdono gran parte del vantaggio quando devono risolvere autonomamente le menzioni.
 
