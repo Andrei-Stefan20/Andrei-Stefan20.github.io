@@ -47,7 +47,7 @@ languages:
 appearance:
   accent_color: "#2b2b2b"
   recent_items_on_home: 5
-  background_pattern: "none"
+  background_pattern: "grid"
   font_style: "default"
 
 layouts_dir: layouts
