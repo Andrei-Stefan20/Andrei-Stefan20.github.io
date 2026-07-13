@@ -79,6 +79,7 @@ accessibility:
   profile_photo_suffix: "foto profilo"
   project_preview_suffix: "anteprima"
   menu_open: "Apri il menu"
+  menu_close: "Chiudi il menu"
   main_navigation: "Navigazione principale"
   theme_toggle: "Cambia tema chiaro o scuro"
   background_toggle: "Cambia motivo dello sfondo"
