@@ -1,6 +1,12 @@
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
-<article class="entry-row entry-{{ include.item.type }}">
+{% assign entry_image = include.item.thumbnail | default: include.item.image | default: include.item.cover %}
+<article class="entry-row entry-{{ include.item.type }}{% unless entry_image and entry_image != '' %} entry-no-image{% endunless %}">
+  {% if entry_image and entry_image != '' %}
+    <a class="entry-thumb-link" href="{{ include.item.url | relative_url }}">
+      <img class="entry-thumb" src="{{ entry_image | relative_url }}" alt="{{ include.item.thumbnail_alt | default: include.item.title }}">
+    </a>
+  {% endif %}
   <time datetime="{{ include.item.date | date_to_xmlschema }}">{{ include.item.date | date: '%b %Y' }}</time>
   <div>
     <p class="writing-topic">{% if include.item.type == 'project' %}{{ t.work.project_label }}{% if include.item.role %} {{ include.item.role }}{% endif %}{% else %}{{ include.item.category | default: t.writing.default_category }}{% if include.item.read_time %} {{ include.item.read_time }} {{ t.writing.read_suffix }}{% endif %}{% endif %}</p>
