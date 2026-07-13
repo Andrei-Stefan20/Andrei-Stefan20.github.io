@@ -46,8 +46,6 @@ Ambiguity makes the problem worse. A surface form can correspond to many nodes, 
 
 Even when the correct entity is known, the graph structure may still be non-obvious. Temporal constraints, roles and qualifiers require navigating reified statements with prefixes such as `p:`, `ps:` and `pq:` rather than relying only on direct `wdt:` edges.
 
-![Wikidata qualifier navigation requires reified statement paths rather than only direct properties](/images/articles/text-to-sparql-bottleneck/qualifiers.png)
-
 This produces two separate tasks:
 
 1. infer what the mention means;
@@ -58,8 +56,6 @@ Prompting can help with the first. It cannot reliably solve the second without a
 ## Retrieving properties and examples
 
 The schema-retrieval component embeds enriched property descriptions containing labels, aliases and short explanations, then indexes them with FAISS. At runtime, the question and linked-entity context are used to retrieve candidate PIDs.
-
-![FAISS property retrieval over enriched Wikidata labels, descriptions and aliases](/images/articles/text-to-sparql-bottleneck/property-retrieval.png)
 
 The goal was to stop the model from guessing relations from memory. A phrase such as “member of Congress” should still retrieve `P39`, even though the official label is “position held”.
 
