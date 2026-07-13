@@ -81,7 +81,14 @@
 }
 
 .case-study-page .project-hero {
-  display: none;
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 26px auto 34px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--thumb-bg);
 }
 
 .case-study-page .article-content {
