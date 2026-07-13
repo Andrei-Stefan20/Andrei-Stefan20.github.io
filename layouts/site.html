@@ -5,65 +5,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="{{ site.appearance.accent_color }}">
-  <script>
-    (function () {
-      try {
-        var mode = '{{ site.appearance.theme_mode | default: "auto" }}';
-        var stored = localStorage.getItem('theme');
-        var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        var theme = mode === 'auto' ? (stored || systemTheme) : mode;
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.setAttribute('data-theme-mode', mode);
-        var storedBg = localStorage.getItem('bg-pattern');
-        var defaultBg = '{{ site.appearance.background_pattern | default: "none" }}';
-        if (storedBg || defaultBg !== 'none') document.documentElement.setAttribute('data-bg', storedBg || defaultBg);
-        var storedFont = localStorage.getItem('font-style');
-        var defaultFont = '{{ site.appearance.font_style | default: "default" }}';
-        if ((storedFont || defaultFont) === 'hand') document.documentElement.setAttribute('data-font', 'hand');
-      } catch (e) {}
-    })();
-  </script>
+  {% include head-preferences.html %}
   <link rel="icon" type="image/svg+xml" href="{{ '/images/favicon.svg' | relative_url }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="{{ '/css/style.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/css/clean-layout.css' | relative_url }}">
-  <style>:root { --accent-base: {{ site.appearance.accent_color | default: '#00008b' }}; }</style>
-  {% seo %}{% feed_meta %}
+  {% include site-assets.html %}
+  {% seo %}
+  {% feed_meta %}
   {% assign share_image = page.image | default: site.logo %}
   {% if share_image and share_image != '' %}
   <meta property="og:image" content="{{ share_image | absolute_url }}">
   <meta name="twitter:image" content="{{ share_image | absolute_url }}">
   {% endif %}
-  {% assign current_home = site.languages.available | where: 'code', current_lang | map: 'home_url' | first %}
-  {% assign path_remainder = page.url | remove_first: current_home %}
-  {% for lang in site.languages.available %}
-    {% if lang.code == current_lang %}
-      {% assign hreflang_url = page.url %}
-    {% else %}
-      {% assign hreflang_url = nil %}
-      {% if page.slug %}
-        {% assign translation = site.pages | where: 'slug', page.slug | where: 'lang', lang.code | first %}
-        {% if translation %}{% assign hreflang_url = translation.url %}{% endif %}
-      {% endif %}
-      {% unless hreflang_url %}{% assign hreflang_url = lang.home_url | append: path_remainder %}{% endunless %}
-    {% endif %}
-  <link rel="alternate" hreflang="{{ lang.code }}" href="{{ site.url }}{{ hreflang_url | relative_url }}">
-  {% endfor %}
-  {% assign default_home = site.languages.available | where: 'code', site.languages.default | map: 'home_url' | first %}
-  <link rel="alternate" hreflang="x-default" href="{{ site.url }}{{ default_home | relative_url }}">
+  {% include head-alternates.html current_lang=current_lang %}
   {% if site.analytics.plausible_domain and site.analytics.plausible_domain != '' %}
   <script defer data-domain="{{ site.analytics.plausible_domain }}" src="https://plausible.io/js/script.js"></script>
   {% endif %}
 </head>
 <body>
   {% include site-header.html %}
-  <main class="page-content"><div class="wrapper">{{ content }}</div></main>
+  <main class="page-content">
+    <div class="wrapper">{{ content }}</div>
+  </main>
   {% include site-footer.html %}
-  <script src="{{ '/js/theme.js' | relative_url }}" defer></script>
-  <script src="{{ '/js/background.js' | relative_url }}" defer></script>
-  <script src="{{ '/js/font.js' | relative_url }}" defer></script>
-  <script src="{{ '/js/nav.js' | relative_url }}" defer></script>
+  {% include site-scripts.html %}
 </body>
 </html>
