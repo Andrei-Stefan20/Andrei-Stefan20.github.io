@@ -34,17 +34,29 @@ hr {
   margin-bottom: 8px;
 }
 
-/* Automatic article and project covers */
-.article-cover,
-.case-study-page .project-hero {
+/* Automatic article covers */
+.article-page .post-date {
+  margin-bottom: 10px;
+}
+
+.article-cover-frame {
+  margin: 0 0 26px;
+  padding: 18px;
+  border-radius: 8px;
+  background: var(--thumb-bg);
+  overflow: hidden;
+}
+
+.article-cover {
   display: block;
   width: 100%;
-  max-width: 720px;
+  max-width: 100%;
+  max-height: 420px;
   height: auto;
-  margin: 26px auto 34px;
+  margin: 0 auto;
   border-radius: 4px;
-  object-fit: cover;
-  background: var(--thumb-bg);
+  object-fit: contain;
+  background: transparent;
 }
 
 /* Home and archive thumbnails */
@@ -104,6 +116,15 @@ hr {
 }
 
 @media screen and (max-width: 700px) {
+  .article-cover-frame {
+    padding: 12px;
+    margin-bottom: 22px;
+  }
+
+  .article-cover {
+    max-height: 320px;
+  }
+
   .entry-row,
   .writing-item {
     grid-template-columns: 110px minmax(0, 1fr) 24px;
