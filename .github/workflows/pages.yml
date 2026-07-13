@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,22 +13,20 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/configure-pages@v5
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1'
           bundler-cache: true
+      - name: Validate configuration and content
+        run: ruby scripts/validate_site.rb
       - name: Build with Jekyll
         run: bundle exec jekyll build --source ./ --destination ./_site --config config.yml
         env:
@@ -37,8 +37,19 @@ jobs:
       - name: Build search index
         run: npx --yes pagefind --site ./_site
       - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
         with:
           path: ./_site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/configure-pages@v5
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
