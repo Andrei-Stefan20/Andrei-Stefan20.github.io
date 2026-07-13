@@ -8,11 +8,11 @@ permalink: /entries/text-to-sparql-bottleneck/
 date: 2026-06-22
 category: "Knowledge Graphs"
 read_time: 11
-image: "/images/articles/text-to-sparql-bottleneck/hero.png"
-thumbnail: "/images/articles/text-to-sparql-bottleneck/hero.png"
-cover: "/images/articles/text-to-sparql-bottleneck/hero.png"
-cover_alt: "Text-to-SPARQL results showing entity linking as the main source of improvement"
-thumbnail_alt: "Text-to-SPARQL article preview"
+image: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+thumbnail: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+cover: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
+cover_alt: "Modular Text-to-SPARQL pipeline"
+thumbnail_alt: "Text-to-SPARQL pipeline preview"
 excerpt: "An ablation study on Text-to-SPARQL generation showed that reliable entity linking mattered far more than extra examples, schema hints or increasingly elaborate prompts."
 ---
 
@@ -41,8 +41,6 @@ The useful part of this design was not obtaining one final score. Every componen
 SPARQL generation is often presented as another structured-generation problem, similar to SQL. The comparison only goes so far.
 
 A relational database usually exposes a bounded schema with readable table and column names. Wikidata instead contains more than one hundred million entities and thousands of properties identified by opaque QIDs and PIDs. The question itself does not reveal those identifiers.
-
-![DBpedia exposes readable relation names while Wikidata uses opaque property identifiers](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
 Ambiguity makes the problem worse. A surface form can correspond to many nodes, and search APIs tend to prefer the most popular candidate rather than the one that best fits the sentence.
 
@@ -77,11 +75,7 @@ Both ideas sound useful in isolation. The ablations showed that their effect dep
 
 Across the full 394-question test set, configurations without entity linking obtained macro F1 scores of roughly 5–8%. Adding REBEL raised them to approximately 17–20%, depending on the model and prompt.
 
-![Best full-dataset results across models and prompting configurations](/images/articles/text-to-sparql-bottleneck/results.png)
-
 The best configurations reached roughly 24–25% macro F1. GPT-4o benefited most from decomposition, while Llama 3.3 70B was strongest with self-consistency. Those strategies mattered, but only after the question had been grounded in plausible entities.
-
-![Entity linking raises performance from roughly six percent to twenty percent before prompting adds the final gains](/images/articles/text-to-sparql-bottleneck/linker-gain.png)
 
 One component produced a two-to-threefold improvement. Everything else together added only a few more points.
 
@@ -128,8 +122,6 @@ The agentic version does not rely entirely on identifiers supplied at the start.
 
 The Emu War example shows the difference. A single-shot query chose the wrong property and returned nothing. The agent explored an indirect path, identified the event, inspected its participants and filtered the result to animals.
 
-![Agentic graph traversal recovers the Emu War answer by checking identifiers and relations against live data](/images/articles/text-to-sparql-bottleneck/react.png)
-
 This is closer to search than to plain generation. The model is no longer asked to remember the graph perfectly; it is allowed to verify hypotheses against the data.
 
 ## Prompt engineering helped, but it did not remove the bottleneck
@@ -143,8 +135,6 @@ The best prompts worked because they operated on better inputs. Once the relevan
 ## How the result compares with other systems
 
 The comparison with previous work must be read carefully because the systems use different assumptions, models and evaluation settings. Some are fine-tuned, some perform graph search, and others receive gold entities.
-
-![Comparison with previous Text-to-SPARQL systems under different assumptions](/images/articles/text-to-sparql-bottleneck/comparison.png)
 
 The most revealing comparison is not the absolute ranking. It is what happens when gold entities are removed. Systems that look dramatically stronger with perfect entity grounding lose much of that advantage once they must resolve mentions themselves.
 
