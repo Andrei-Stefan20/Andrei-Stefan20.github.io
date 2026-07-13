@@ -8,11 +8,11 @@ permalink: /it/entries/text-to-sparql-bottleneck/
 date: 2026-06-22
 category: "Knowledge Graph"
 read_time: 11
-image: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-thumbnail: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-cover: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-cover_alt: "Pipeline modulare Text-to-SPARQL"
-thumbnail_alt: "Anteprima della pipeline Text-to-SPARQL"
+image: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+thumbnail: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+cover: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+cover_alt: "Rappresentazione di un Knowledge Graph usata nel progetto Text-to-SPARQL"
+thumbnail_alt: "Anteprima del Knowledge Graph Text-to-SPARQL"
 excerpt: "Un ablation study sulla generazione Text-to-SPARQL ha mostrato che un entity linking affidabile conta molto più di esempi aggiuntivi, schema hints o prompt sempre più complessi."
 ---
 
@@ -28,9 +28,7 @@ Il progetto usa domande del benchmark QALD-10 e chiede a un modello di generare 
 
 ![La domanda deve essere collegata agli identificatori opachi di Wikidata prima della generazione SPARQL](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
-La pipeline è composta da stadi configurabili in modo indipendente:
-
-![Pipeline modulare con entity linking, schema retrieval, esempi, costruzione del prompt e generazione](/images/articles/text-to-sparql-bottleneck/pipeline.png)
+La pipeline è composta da stadi configurabili in modo indipendente.
 
 Ho confrontato GPT-4o, GPT-4o-mini e Llama 3.3 70B, variando il linker, gli esempi few-shot recuperati con FAISS, i suggerimenti sulle proprietà Wikidata e strategie di prompting come decomposition e self-consistency.
 
