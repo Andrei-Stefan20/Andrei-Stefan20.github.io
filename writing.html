@@ -18,8 +18,16 @@ permalink: /writing/
 {% if articles.size > 0 %}
 <div class="writing-index">
   {% for article in articles %}
-  <article class="writing-index-item">
-    <time datetime="{{ article.date | date_to_xmlschema }}">{{ article.date | date: '%b %Y' }}</time>
+  {% assign article_image = article.thumbnail | default: article.image | default: article.cover %}
+  <article class="writing-index-item{% unless article_image and article_image != '' %} writing-index-item-no-image{% endunless %}">
+    <div class="writing-index-side">
+      <time datetime="{{ article.date | date_to_xmlschema }}">{{ article.date | date: '%b %Y' }}</time>
+      {% if article_image and article_image != '' %}
+      <a class="writing-index-thumb-link" href="{{ article.url | relative_url }}">
+        <img class="writing-index-thumb" src="{{ article_image | relative_url }}" alt="{{ article.thumbnail_alt | default: article.cover_alt | default: article.title }}" loading="lazy">
+      </a>
+      {% endif %}
+    </div>
     <div class="writing-index-main">
       <p class="writing-topic">{{ article.category | default: t.writing.default_category }}{% if article.read_time %} · {{ article.read_time }} {{ t.writing.read_suffix }}{% endif %}</p>
       <h2><a href="{{ article.url | relative_url }}">{{ article.title }}</a></h2>
@@ -35,17 +43,29 @@ permalink: /writing/
 
 <style>
 .writing-index { width: 100%; margin-top: 8px; }
-.writing-index-item { display: grid; grid-template-columns: 105px minmax(0, 1fr) 28px; gap: 20px; align-items: start; padding: 24px 0; border-bottom: 1px solid var(--border); }
+.writing-index-item { display: grid; grid-template-columns: 190px minmax(0, 1fr) 28px; gap: 24px; align-items: start; padding: 24px 0; border-bottom: 1px solid var(--border); }
 .writing-index-item:first-child { border-top: 1px solid var(--border); }
-.writing-index-item time { padding-top: 4px; color: var(--muted); font: 12px/1.5 var(--mono); text-transform: uppercase; }
+.writing-index-item-no-image { grid-template-columns: 105px minmax(0, 1fr) 28px; }
+.writing-index-side { min-width: 0; }
+.writing-index-side time { display: block; margin-bottom: 10px; color: var(--muted); font: 12px/1.5 var(--mono); text-transform: uppercase; }
+.writing-index-thumb-link { display: block; width: 100%; overflow: hidden; border-radius: 4px; }
+.writing-index-thumb { display: block; width: 100%; height: 118px; object-fit: cover; border-radius: 4px; background: var(--thumb-bg); transition: opacity .2s ease; }
+.writing-index-thumb-link:hover .writing-index-thumb { opacity: .82; }
 .writing-index-main { min-width: 0; }
 .writing-index-main h2 { margin: 3px 0 8px; font-size: 21px; line-height: 1.3; }
 .writing-index-main h2 a { overflow-wrap: anywhere; }
 .writing-index-excerpt { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
 .writing-index-arrow { align-self: center; justify-self: end; color: var(--fg); font-size: 22px; line-height: 1; }
-@media (max-width: 600px) {
-  .writing-index-item { grid-template-columns: 1fr 24px; gap: 10px; padding: 20px 0; }
-  .writing-index-item time { grid-column: 1 / -1; padding: 0; margin-bottom: -2px; }
+@media (max-width: 700px) {
+  .writing-index-item { grid-template-columns: 132px minmax(0, 1fr) 24px; gap: 16px; }
+  .writing-index-item-no-image { grid-template-columns: 85px minmax(0, 1fr) 24px; }
+  .writing-index-thumb { height: 92px; }
+}
+@media (max-width: 460px) {
+  .writing-index-item,
+  .writing-index-item-no-image { grid-template-columns: minmax(0, 1fr) 24px; gap: 12px; padding: 20px 0; }
+  .writing-index-side { grid-column: 1 / -1; }
+  .writing-index-thumb { height: 180px; }
   .writing-index-main { grid-column: 1; }
   .writing-index-arrow { grid-column: 2; grid-row: 2; }
   .writing-index-main h2 { font-size: 19px; }
