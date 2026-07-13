@@ -34,6 +34,8 @@ end
 seen = {}
 Dir.glob(CONTENT_GLOB).sort.each do |path|
   relative = path.delete_prefix("#{ROOT}/")
+  next if File.basename(path).downcase == "readme.md"
+
   data = front_matter(path)
 
   unless data
