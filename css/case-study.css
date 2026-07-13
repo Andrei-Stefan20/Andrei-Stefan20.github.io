@@ -5,8 +5,7 @@
 .case-study-header {
   max-width: 720px;
   margin: 0 auto 38px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
 }
 
 .case-study-header .post-date {
