@@ -37,7 +37,7 @@ about_page:
 home:
   about_title: "About"
   recent_title: "Latest work & writing"
-  recent_intro: "The most recent projects and articles, ordered by date."
+  recent_intro: "The most recent projects and articles."
   archive_link: "View the archive →"
   archive_url: "/archive/"
 
