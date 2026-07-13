@@ -51,10 +51,6 @@ appearance:
   theme_mode: "auto"
   font_style: "default"
 
-layouts_dir: layouts
-includes_dir: includes
-data_dir: data
-
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
