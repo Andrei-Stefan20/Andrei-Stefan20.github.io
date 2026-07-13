@@ -4,7 +4,7 @@ require "yaml"
 require "date"
 
 ROOT = File.expand_path("..", __dir__)
-CONFIG_PATH = File.join(ROOT, "config.yml")
+CONFIG_PATH = File.join(ROOT, "_config.yml")
 CONTENT_GLOB = File.join(ROOT, "entries", "**", "*.md")
 
 errors = []
@@ -12,16 +12,30 @@ errors = []
 begin
   config = YAML.safe_load(File.read(CONFIG_PATH), permitted_classes: [Date, Time], aliases: true) || {}
 rescue StandardError => e
-  warn "config.yml could not be parsed: #{e.message}"
+  warn "_config.yml could not be parsed: #{e.message}"
   exit 1
 end
 
 %w[title url repository author languages appearance].each do |key|
-  errors << "config.yml is missing '#{key}'" unless config.key?(key)
+  errors << "_config.yml is missing '#{key}'" unless config.key?(key)
 end
 
 languages = Array(config.dig("languages", "available")).map { |item| item["code"] }.compact
 errors << "No languages are configured" if languages.empty?
+
+%w[_layouts _includes _data].each do |directory|
+  errors << "Missing standard Jekyll directory '#{directory}'" unless Dir.exist?(File.join(ROOT, directory))
+end
+
+%w[site article case-study].each do |layout|
+  path = File.join(ROOT, "_layouts", "#{layout}.html")
+  errors << "Missing layout '#{layout}'" unless File.file?(path)
+end
+
+%w[site-header site-footer site-assets site-scripts head-preferences head-alternates archive-browser recent-entry writing-entry work-entry comments].each do |include_name|
+  path = File.join(ROOT, "_includes", "#{include_name}.html")
+  errors << "Missing include '#{include_name}'" unless File.file?(path)
+end
 
 def front_matter(path)
   source = File.read(path)

@@ -29,7 +29,7 @@ jobs:
       - name: Validate configuration and content
         run: ruby scripts/validate_site.rb
       - name: Build with Jekyll
-        run: bundle exec jekyll build --source ./ --destination ./_site --config config.yml
+        run: bundle exec jekyll build --source ./ --destination ./_site
         env:
           JEKYLL_ENV: production
       - uses: actions/setup-node@v4
