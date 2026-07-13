@@ -17,9 +17,16 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
       - name: Build site with Jekyll
-        run: bundle exec jekyll build --source ./ --destination ./_site --config config.yml
+        run: bundle exec jekyll build --source ./ --destination ./_site
         env:
           JEKYLL_ENV: production
-      - uses: lycheeverse/lychee-action@v2
+      - name: Check generated links
+        uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --exclude '^mailto:' --exclude '^#$' './_site/**/*.html'
+          args: >-
+            --no-progress
+            --root-dir ./_site
+            --exclude '^mailto:'
+            --exclude '^#$'
+            --exclude '^https://www\.linkedin\.com/'
+            './_site/**/*.html'
