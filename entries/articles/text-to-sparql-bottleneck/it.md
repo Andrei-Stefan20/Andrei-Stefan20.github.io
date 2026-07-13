@@ -7,61 +7,97 @@ slug: text-to-sparql-bottleneck
 permalink: /it/entries/text-to-sparql-bottleneck/
 date: 2026-06-22
 category: "Knowledge Graph"
-read_time: 9
+read_time: 11
+image: "/images/articles/text-to-sparql-bottleneck/hero.png"
+thumbnail: "/images/articles/text-to-sparql-bottleneck/hero.png"
+cover: "/images/articles/text-to-sparql-bottleneck/hero.png"
+cover_alt: "Risultati Text-to-SPARQL che mostrano l'importanza dell'entity linking"
+thumbnail_alt: "Anteprima dell'articolo Text-to-SPARQL"
 excerpt: "Un ablation study sulla generazione Text-to-SPARQL ha mostrato che un entity linking affidabile conta molto più di esempi aggiuntivi, schema hints o prompt sempre più complessi."
 ---
 
 I Large Language Model riescono a generare SPARQL dall'aspetto convincente molto prima di riuscire a generare SPARQL realmente corretto.
 
-Questa differenza è diventata il problema centrale dei miei esperimenti sulla traduzione di domande in linguaggio naturale in query eseguibili su Wikidata. La sintassi prodotta era spesso valida. La query conteneva prefissi, variabili, triple pattern e filtri nei punti giusti. Nonostante questo, poteva restituire una risposta errata o nessun risultato, perché bastava un solo identificatore di entità o proprietà sbagliato.
+Questa differenza è diventata il problema centrale dei miei esperimenti sulla traduzione di domande in linguaggio naturale in query eseguibili su Wikidata. La sintassi era spesso valida: prefissi, variabili, triple pattern e filtri comparivano nei punti giusti. Nonostante questo, la query poteva restituire una risposta errata o nessun risultato, perché bastava un solo identificatore di entità o proprietà sbagliato.
 
-Il modello non falliva soprattutto nello scrivere SPARQL. Falliva nel collegare il linguaggio usato da una persona agli identificatori usati dal Knowledge Graph.
+Il modello non falliva soprattutto nello scrivere SPARQL. Falliva nel collegare il linguaggio umano agli identificatori usati dal grafo.
 
 ## Il task
 
-Il progetto usa domande del benchmark QALD-10 e chiede al modello di generare SPARQL per Wikidata. Una domanda può citare una persona, un luogo, un'opera o un evento storico con parole normali, mentre la query finale deve usare identificatori come `Q42` o `P31`.
+Il progetto usa domande del benchmark QALD-10 e chiede a un modello di generare SPARQL per Wikidata. Una domanda può citare una persona, un luogo, un'opera o un evento con parole normali, mentre la query finale deve usare identificatori come `Q42`, `P19` o `P1346`.
 
-La pipeline è stata costruita come un insieme di componenti configurabili in modo indipendente:
+![La domanda deve essere collegata agli identificatori opachi di Wikidata prima della generazione SPARQL](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
-```text
-domanda in linguaggio naturale
-  -> entity linking
-  -> retrieval di esempi simili
-  -> schema hints
-  -> costruzione del prompt
-  -> generazione con LLM
-  -> validazione sintattica ed esecuzione
-  -> query SPARQL
-```
+La pipeline è composta da stadi configurabili in modo indipendente:
 
-Ho confrontato GPT-4o, GPT-4o-mini e Llama 3.3 70B, variando attorno a essi il linker, gli esempi few-shot recuperati con FAISS, i suggerimenti sulle proprietà Wikidata e strategie di prompting come decomposition e self-consistency.
+![Pipeline modulare con entity linking, schema retrieval, esempi, costruzione del prompt e generazione](/images/articles/text-to-sparql-bottleneck/pipeline.png)
+
+Ho confrontato GPT-4o, GPT-4o-mini e Llama 3.3 70B, variando il linker, gli esempi few-shot recuperati con FAISS, i suggerimenti sulle proprietà Wikidata e strategie di prompting come decomposition e self-consistency.
 
 Il valore di questa impostazione non era ottenere soltanto un punteggio finale. Ogni componente poteva essere attivato o rimosso, rendendo possibile misurare il suo contributo reale.
 
-## Perché non è semplice code generation
+## Perché Wikidata è più difficile della normale code generation
 
-La generazione SPARQL viene spesso presentata come un altro problema di generazione strutturata, simile al Text-to-SQL. Il confronto è corretto solo in parte.
+La generazione SPARQL viene spesso trattata come un altro problema di generazione strutturata, simile al Text-to-SQL. Il confronto è valido solo in parte.
 
-Un database relazionale espone in genere uno schema controllato dall'applicazione. Tabelle e colonne hanno nomi leggibili, sono in numero limitato e possono essere mostrate al modello. Wikidata contiene invece milioni di entità e proprietà identificate da QID e PID opachi. La domanda non rivela questi identificatori.
+Un database relazionale espone di solito uno schema limitato e leggibile. Wikidata contiene invece oltre cento milioni di entità e migliaia di proprietà identificate da QID e PID opachi. La domanda non rivela quegli identificatori.
 
-La parola `Mercury`, per esempio, può indicare un pianeta, un elemento chimico, una divinità romana, un giornale, un'etichetta discografica o una persona. Un modello può comprendere la frase e selezionare comunque il nodo Wikidata sbagliato. Da quel momento, anche una query costruita perfettamente rimane semanticamente errata.
+![DBpedia usa nomi leggibili mentre Wikidata usa identificatori numerici opachi](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
-Esistono quindi due problemi distinti:
+L'ambiguità peggiora ulteriormente il problema. Una stessa espressione può indicare nodi diversi e le API di ricerca tendono a favorire il candidato più popolare, non necessariamente quello corretto nel contesto.
 
-1. capire il significato inteso della menzione;
-2. collegare quel significato all'identificatore corretto del Knowledge Graph.
+![Ambiguità nella risoluzione dell'entità illustrata con i diversi significati di The Matrix](/images/articles/text-to-sparql-bottleneck/entity-ambiguity.png)
 
-Il prompting può aiutare con il primo punto. Non può risolvere in modo affidabile il secondo senza accesso al grafo o a un componente di retrieval.
+Anche quando l'entità è corretta, la struttura del grafo può richiedere navigazione complessa. Date, ruoli e qualificatori usano statement reificati con prefissi come `p:`, `ps:` e `pq:`, non soltanto relazioni dirette `wdt:`.
+
+![La navigazione dei qualificatori in Wikidata richiede statement reificati](/images/articles/text-to-sparql-bottleneck/qualifiers.png)
+
+Il problema contiene quindi due task distinti:
+
+1. capire il significato della menzione;
+2. collegarlo all'identificatore e al percorso corretto nel Knowledge Graph.
+
+Il prompting può aiutare con il primo punto. Non può risolvere in modo affidabile il secondo senza accesso al grafo o a un componente esterno di retrieval.
+
+## Recuperare proprietà ed esempi
+
+Lo schema retrieval costruisce un indice FAISS su descrizioni arricchite delle proprietà, combinando etichette, alias e spiegazioni brevi. Durante l'esecuzione, la domanda e il contesto delle entità collegate vengono usati per recuperare PID candidati.
+
+![Property retrieval con FAISS su etichette, descrizioni e alias di Wikidata](/images/articles/text-to-sparql-bottleneck/property-retrieval.png)
+
+L'obiettivo era evitare che il modello dovesse indovinare le relazioni dalla memoria. Un'espressione come “member of Congress” dovrebbe recuperare `P39`, anche se l'etichetta ufficiale è “position held”.
+
+Un secondo retriever seleziona esempi semanticamente simili da QALD-9+ e inserisce nel prompt le rispettive domande e query SPARQL gold.
+
+![Il few-shot retrieval fornisce domande simili e strutture SPARQL gold](/images/articles/text-to-sparql-bottleneck/few-shot.png)
+
+Entrambe le idee sembrano utili. Gli ablation study hanno mostrato che il loro effetto dipendeva fortemente dalla correttezza dell'entity linking.
 
 ## Il miglioramento principale arrivava dall'entity linking
 
-Sul test set completo di 394 domande, le configurazioni senza entity linking ottenevano un macro F1 di circa 5–8%. Aggiungendo il linker, il risultato saliva approssimativamente al 17–20%, a seconda del modello e del prompt.
+Sul test set completo di 394 domande, le configurazioni senza entity linking ottenevano un macro F1 di circa 5–8%. Aggiungendo REBEL, il risultato saliva approssimativamente al 17–20%, a seconda del modello e del prompt.
 
-Si tratta di un miglioramento di due o tre volte prodotto da un solo componente. Nessuna delle altre aggiunte ha avuto un effetto della stessa dimensione.
+![Migliori risultati sul dataset completo per modello e strategia di prompting](/images/articles/text-to-sparql-bottleneck/results.png)
 
-Le configurazioni migliori raggiungevano circa il 24–25% di macro F1. GPT-4o beneficiava maggiormente della decomposition, mentre GPT-4o-mini e Llama 3.3 70B risultavano più competitivi con la self-consistency. Queste strategie erano utili, ma soprattutto dopo aver fornito alla pipeline entità plausibili.
+Le configurazioni migliori raggiungevano circa il 24–25% di macro F1. GPT-4o beneficiava maggiormente della decomposition, mentre Llama 3.3 70B risultava più forte con self-consistency. Queste strategie contavano, ma soprattutto dopo aver fornito alla pipeline entità plausibili.
 
-Questo ha cambiato il modo in cui interpretavo gli errori. Un punteggio finale basso non significava necessariamente che il modello non sapesse ragionare sulla domanda. In molti casi ragionava sul nodo sbagliato.
+![L'entity linking porta il punteggio da circa sei a venti punti prima dei guadagni del prompting](/images/articles/text-to-sparql-bottleneck/linker-gain.png)
+
+Un solo componente produceva un miglioramento di due o tre volte. Tutto il resto insieme aggiungeva soltanto pochi punti.
+
+Questo ha cambiato il modo in cui interpretavo gli errori. Un punteggio basso non significava necessariamente che il modello non sapesse ragionare sulla domanda. In molti casi ragionava sul nodo sbagliato.
+
+## Il retrieval può peggiorare il prompt
+
+Il few-shot retrieval senza linking affidabile spesso funzionava peggio della generazione senza contesto.
+
+Gli esempi non erano sempre irrilevanti. Erano spesso simili dal punto di vista linguistico, ma richiedevano relazioni differenti. Una domanda sul coniuge può somigliare a una su un collaboratore, un creatore o un membro del cast. Il modello può copiare una struttura plausibile ma sbagliata per il percorso target.
+
+Anche gli schema hints mostravano lo stesso problema. Quando l'entity linking era già attivo, aggiungere proprietà candidate riduceva talvolta il macro F1. Una lista di relazioni plausibili amplia lo spazio di scelta e spinge il modello a fidarsi di suggerimenti che suonano corretti ma non corrispondono al grafo.
+
+![Gli ablation study mostrano che esempi e schema hints possono ridurre le prestazioni](/images/articles/text-to-sparql-bottleneck/ablation.png)
+
+La conclusione non è che il retrieval sia inutile. È che deve essere valutato componente per componente. Più contesto aiuta solo quando riduce l'incertezza invece di aggiungerne altra.
 
 ## Una query valida può essere comunque sbagliata
 
@@ -71,65 +107,71 @@ Una query generata può fallire a livelli differenti:
 - query valida ma non eseguibile;
 - query valida che non restituisce binding;
 - query eseguibile che restituisce l'entità sbagliata;
-- entità corretta ma relazione errata;
+- entità corretta ma proprietà errata;
 - struttura diversa dalla gold query ma risposta comunque corretta.
 
-La validazione sintattica rileva soltanto il primo caso. La validazione tramite esecuzione identifica alcuni dei due successivi. Nessuna delle due dimostra che gli identificatori selezionati corrispondano davvero all'intento dell'utente.
+La validazione sintattica rileva soltanto il primo caso. La validazione tramite esecuzione ne intercetta alcuni altri. Nessuna delle due dimostra che gli identificatori selezionati corrispondano davvero all'intento dell'utente.
 
-Per questo anche la correzione automatica ha limiti precisi. Restituire al modello un errore di esecuzione può correggere una parentesi mancante, un filtro malformato o una variabile non valida. Non sempre può capire che `Apple` è stata collegata al frutto invece che all'azienda, soprattutto se entrambi gli identificatori producono risultati validi.
+Per questo anche la correzione automatica ha limiti precisi. Un errore di esecuzione può aiutare a correggere un filtro malformato o una parentesi mancante. Non sempre permette di capire che una menzione è stata collegata al nodo sbagliato quando entrambe le query vengono eseguite correttamente.
 
-## Il few-shot retrieval non aiutava automaticamente
+## La correzione iterativa aiutava alcuni modelli e ne peggiorava un altro
 
-La pipeline recupera con FAISS domande di training simili e inserisce nel prompt le relative query SPARQL. L'aspettativa era semplice: gli esempi avrebbero mostrato strutture ricorrenti e uso corretto degli identificatori Wikidata.
+Su un esperimento più piccolo da 100 domande, la correzione iterativa produceva guadagni importanti per GPT-4o e Llama 3.3, mentre GPT-4o-mini peggiorava. Il modello più debole tendeva a semplificare la query dopo il feedback, perdendo una parte del significato originale.
 
-In pratica, il few-shot retrieval senza un entity linking affidabile spesso funzionava peggio della generazione senza contesto.
+![La correzione iterativa migliora GPT-4o e Llama ma riduce le prestazioni di GPT-4o-mini](/images/articles/text-to-sparql-bottleneck/iterative-correction.jpg)
 
-Il problema non era che gli esempi fossero sempre irrilevanti. Potevano essere simili dal punto di vista linguistico e richiedere una struttura del grafo diversa. Una domanda sul coniuge di una persona può somigliare a una su un collaboratore, un creatore o un membro del cast. Copiare la struttura visibile dell'esempio può portare il modello verso la proprietà sbagliata.
+Questo risultato è interessante proprio perché non è universalmente positivo. Un correction loop non migliora automaticamente un sistema. Il suo valore dipende dalla capacità del modello di interpretare il feedback senza distruggere la struttura della query.
 
-Gli esempi introducono inoltre altri identificatori nel contesto. Quando le entità target non sono già state risolte, il modello può copiare un QID o una relazione perché sembrano adatti dal punto di vista strutturale.
+## Il graph traversal agentico cambia il problema
 
-La conclusione non è che il few-shot prompting sia inutile. È che gli esempi devono essere selezionati e ancorati rispetto alla parte del problema che devono risolvere. La sola similarità semantica tra domande non basta.
+La versione agentica non dipende soltanto dagli identificatori forniti all'inizio. Può ispezionare risultati del grafo, provare un percorso, recuperare da una risposta vuota e cambiare relazione.
 
-## Anche gli schema hints possono distrarre
+L'esempio della Emu War mostra la differenza. La query single-shot sceglieva la proprietà sbagliata e non trovava risultati. L'agente esplorava un percorso indiretto, identificava l'evento, ne esaminava i partecipanti e filtrava il risultato fino agli animali.
 
-Ho testato anche suggerimenti sulle proprietà recuperati dallo schema di Wikidata. In teoria, fornire PID candidati dovrebbe ridurre la necessità per il modello di ricordare le relazioni.
+![Il graph traversal agentico recupera la risposta sulla Emu War verificando identificatori e relazioni](/images/articles/text-to-sparql-bottleneck/react.png)
 
-L'effetto è stato misto. Quando l'entity linking era già attivo, gli schema hints riducevano spesso il macro F1 invece di migliorarlo.
-
-Una lista di proprietà plausibili amplia lo spazio di scelta del modello. Alcune relazioni hanno descrizioni sovrapposte e la distinzione emerge solo osservando dominio, range e contesto del grafo. Mostrare molti candidati può rendere il prompt apparentemente più informativo, ma anche più incerto.
-
-Questo suggerisce che lo schema retrieval dovrebbe essere selettivo. È più utile quando il modello è davvero incerto su una relazione, non quando viene aggiunto a ogni domanda per impostazione predefinita. Una versione successiva dovrebbe recuperare proprietà in modo condizionale, usando le entità già collegate e la forma attesa della query.
+Questo approccio è più vicino alla ricerca che alla semplice generazione. Il modello non deve ricordare perfettamente il grafo: può verificare le proprie ipotesi sui dati.
 
 ## Il prompt engineering aiutava, ma non eliminava il collo di bottiglia
 
-La decomposition chiede al modello di separare una domanda complessa in decisioni più piccole prima di produrre la query finale. La self-consistency genera più candidati e ne seleziona o aggrega il risultato. Entrambe hanno migliorato alcune configurazioni.
+Decomposition e self-consistency miglioravano alcune configurazioni. I guadagni rimanevano però molto più piccoli rispetto a quelli prodotti dall'entity linking.
 
-I loro guadagni rimanevano però molto più piccoli rispetto a quello prodotto dall'entity linking.
+Più ragionamento non compensa un grounding errato. Può invece generare una spiegazione più lunga e coerente costruita sull'interpretazione sbagliata.
 
-È una distinzione pratica importante. Più ragionamento non compensa un grounding errato. Può invece generare una spiegazione più lunga e coerente costruita sull'interpretazione sbagliata.
+I prompt migliori funzionavano perché operavano su input migliori. Una volta disponibili i QID rilevanti, la decomposition poteva concentrarsi su join, filtri, ordinamento e aggregazioni invece di indovinare i nodi del grafo.
 
-I prompt migliori funzionavano perché operavano su input migliori. Una volta disponibili i QID rilevanti, la decomposition poteva concentrarsi su join, filtri, ordinamento e aggregazioni invece di indovinare a quali nodi del grafo facesse riferimento la domanda.
+## Confronto con altri sistemi
+
+Il confronto con lavori precedenti deve essere letto con attenzione perché i sistemi usano assunzioni, modelli e metriche diverse. Alcuni sono fine-tuned, altri usano graph search, altri ancora ricevono entità gold.
+
+![Confronto con altri sistemi Text-to-SPARQL in condizioni sperimentali differenti](/images/articles/text-to-sparql-bottleneck/comparison.png)
+
+Il confronto più interessante non è la posizione assoluta in classifica. È ciò che accade quando si rimuovono le entità gold. Sistemi apparentemente molto più forti perdono gran parte del vantaggio quando devono risolvere autonomamente le menzioni.
+
+Questo sostiene il risultato principale: una parte importante dell'intelligenza apparente del generatore finale dipende dalla qualità degli identificatori forniti prima della generazione.
 
 ## Cosa cambierei nella prossima versione
 
 La pipeline attuale tratta l'entity linking come preprocessing. Gli esperimenti suggeriscono che dovrebbe diventare uno strumento richiamabile durante la generazione.
 
-Invece di ricevere una lista fissa di entità, il modello potrebbe avviare una ricerca quando incontra una menzione ambigua. Lo strumento restituirebbe candidati con etichetta, descrizione e una parte del contesto nel grafo. Il modello potrebbe scegliere, riformulare la ricerca o chiedere altri candidati prima di scrivere SPARQL.
+Invece di ricevere una lista fissa di entità, il modello potrebbe avviare una ricerca quando incontra una menzione ambigua. Lo strumento restituirebbe candidati con etichette, descrizioni e contesto selezionato dal grafo. Il modello potrebbe scegliere, affinare la ricerca o richiedere altri candidati prima di scrivere SPARQL.
 
-Renderei condizionale anche lo schema retrieval. I suggerimenti sulle proprietà dovrebbero essere richiesti solo per relazioni non risolte e classificati usando le entità collegate, non soltanto il testo della domanda.
+Renderei condizionale anche lo schema retrieval. I suggerimenti sulle proprietà dovrebbero essere richiesti soltanto per relazioni non risolte e classificati usando le entità già collegate.
 
-Una valutazione più utile dovrebbe inoltre separare gli errori in categorie:
+Una valutazione più utile dovrebbe separare gli errori in categorie:
 
-- errore nella selezione dell'entità;
-- errore nella selezione della proprietà;
-- struttura della query errata;
-- errori di aggregazione o filtro;
+- selezione dell'entità;
+- selezione della proprietà;
+- struttura della query;
+- aggregazioni e filtri;
 - output sintatticamente non valido;
 - problemi di endpoint o esecuzione.
 
 Un singolo valore F1 è utile per confrontare i sistemi, ma nasconde quale componente richieda davvero intervento.
 
-## La lezione più generale per i sistemi RAG
+## La lezione più generale
+
+![Principali lezioni emerse dagli esperimenti Text-to-SPARQL](/images/articles/text-to-sparql-bottleneck/lessons.png)
 
 Il progetto riguarda SPARQL, ma la conclusione è più ampia.
 
