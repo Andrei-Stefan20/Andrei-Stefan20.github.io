@@ -8,9 +8,12 @@
   <script>
     (function () {
       try {
+        var mode = '{{ site.appearance.theme_mode | default: "auto" }}';
         var stored = localStorage.getItem('theme');
-        var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        var theme = mode === 'auto' ? (stored || systemTheme) : mode;
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-theme-mode', mode);
         var storedBg = localStorage.getItem('bg-pattern');
         var defaultBg = '{{ site.appearance.background_pattern | default: "none" }}';
         if (storedBg || defaultBg !== 'none') document.documentElement.setAttribute('data-bg', storedBg || defaultBg);
