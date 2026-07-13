@@ -59,108 +59,70 @@ hr {
   background: transparent;
 }
 
-/* Generic archive thumbnails */
-.writing-item {
-  grid-template-columns: 150px 88px minmax(0, 1fr) 24px;
+/* Home cards: date and thumbnail stay together in the left column. */
+.entry-row {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 30px;
+  gap: 28px;
   align-items: start;
+  padding: 24px 10px;
 }
 
-.writing-item.writing-no-image {
-  grid-template-columns: 105px minmax(0, 1fr) 30px;
-}
-
-.writing-item .entry-thumb-link {
-  display: block;
+.entry-side {
   grid-column: 1;
+  min-width: 0;
 }
 
-.writing-item .entry-thumb {
+.entry-side time {
   display: block;
-  width: 150px;
-  height: 96px;
+  margin: 0 0 10px;
+  padding: 0;
+  color: var(--muted);
+  font: 12px/1.5 var(--mono);
+}
+
+.entry-thumb-link {
+  display: block;
+  width: 100%;
+}
+
+.entry-thumb {
+  display: block;
+  width: 100%;
+  height: 118px;
   object-fit: cover;
   border-radius: 4px;
   background: var(--thumb-bg);
 }
 
-.writing-item > time {
-  grid-column: 2;
-}
-
-.writing-item > div {
-  grid-column: 3;
-}
-
-.writing-item > .writing-arrow {
-  grid-column: 4;
-}
-
-.writing-item.writing-no-image > time {
-  grid-column: 1;
-}
-
-.writing-item.writing-no-image > div {
-  grid-column: 2;
-}
-
-.writing-item.writing-no-image > .writing-arrow {
-  grid-column: 3;
-}
-
-/* Home cards: date first, thumbnail directly below it */
-.recent-list .entry-row {
-  display: grid;
-  grid-template-columns: 190px minmax(0, 1fr) 28px;
-  gap: 28px;
-  align-items: start;
-  padding: 26px 10px;
-}
-
-.recent-list .entry-media {
-  grid-column: 1;
-  min-width: 0;
-}
-
-.recent-list .entry-media time {
-  display: block;
-  margin: 0 0 12px;
-  padding: 0;
-  color: var(--muted);
-  font: 12px/1.5 var(--mono);
-  text-transform: none;
-}
-
-.recent-list .entry-thumb-link {
-  display: block;
-  width: 100%;
-}
-
-.recent-list .entry-thumb {
-  display: block;
-  width: 100%;
-  height: 118px;
-  object-fit: cover;
-  border-radius: 5px;
-  background: var(--thumb-bg);
-}
-
-.recent-list .entry-copy {
+.entry-main {
   grid-column: 2;
   min-width: 0;
+  padding-top: 1px;
 }
 
-.recent-list .entry-row > .writing-arrow {
+.entry-main h2 {
+  margin-bottom: 8px;
+}
+
+.entry-row > .writing-arrow {
   grid-column: 3;
   align-self: start;
+  justify-self: end;
   margin-top: 2px;
 }
 
-.recent-list .entry-row.entry-no-image {
-  grid-template-columns: 105px minmax(0, 1fr) 28px;
+.entry-row.entry-no-image {
+  grid-template-columns: 105px minmax(0, 1fr) 30px;
 }
 
-.recent-list .entry-row.entry-no-image .entry-media time {
+.entry-row.entry-no-image .entry-side time {
   margin-bottom: 0;
+}
+
+/* Writing cards outside the home keep their compact layout. */
+.writing-item {
+  grid-template-columns: 105px minmax(0, 1fr) 30px;
 }
 
 @media screen and (max-width: 700px) {
@@ -173,115 +135,43 @@ hr {
     max-height: 320px;
   }
 
-  .writing-item {
-    grid-template-columns: 110px minmax(0, 1fr) 24px;
-    gap: 14px;
-  }
-
-  .writing-item .entry-thumb-link {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-
-  .writing-item .entry-thumb {
-    width: 110px;
-    height: 82px;
-  }
-
-  .writing-item > time {
-    grid-column: 2;
-    grid-row: 1;
-    padding-top: 0;
-  }
-
-  .writing-item > div {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .writing-item > .writing-arrow {
-    grid-column: 3;
-    grid-row: 2;
-  }
-
-  .writing-item.writing-no-image {
-    grid-template-columns: 85px minmax(0, 1fr) 24px;
-  }
-
-  .recent-list .entry-row,
-  .recent-list .entry-row.entry-no-image {
-    grid-template-columns: 135px minmax(0, 1fr) 24px;
+  .entry-row {
+    grid-template-columns: 132px minmax(0, 1fr) 24px;
     gap: 16px;
     padding-left: 0;
     padding-right: 0;
   }
 
-  .recent-list .entry-thumb {
+  .entry-thumb {
     height: 92px;
+  }
+
+  .entry-row.entry-no-image {
+    grid-template-columns: 85px minmax(0, 1fr) 24px;
   }
 }
 
 @media screen and (max-width: 460px) {
-  .writing-item,
-  .writing-item.writing-no-image {
-    grid-template-columns: 1fr 24px;
+  .entry-row,
+  .entry-row.entry-no-image {
+    grid-template-columns: minmax(0, 1fr) 24px;
+    gap: 12px;
   }
 
-  .writing-item .entry-thumb-link {
+  .entry-side {
     grid-column: 1 / -1;
-    grid-row: 1;
   }
 
-  .writing-item .entry-thumb {
+  .entry-thumb {
     width: 100%;
     height: 180px;
   }
 
-  .writing-item > time,
-  .writing-item.writing-no-image > time {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .writing-item > div,
-  .writing-item.writing-no-image > div {
+  .entry-main {
     grid-column: 1;
-    grid-row: 3;
   }
 
-  .writing-item > .writing-arrow,
-  .writing-item.writing-no-image > .writing-arrow {
+  .entry-row > .writing-arrow {
     grid-column: 2;
-    grid-row: 3;
-  }
-
-  .recent-list .entry-row,
-  .recent-list .entry-row.entry-no-image {
-    grid-template-columns: 1fr 24px;
-    gap: 10px;
-  }
-
-  .recent-list .entry-media {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  .recent-list .entry-media time {
-    margin-bottom: 10px;
-  }
-
-  .recent-list .entry-thumb {
-    height: 190px;
-  }
-
-  .recent-list .entry-copy {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .recent-list .entry-row > .writing-arrow {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: start;
   }
 }
