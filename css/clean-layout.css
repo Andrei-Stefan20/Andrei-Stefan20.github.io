@@ -34,128 +34,132 @@ hr {
   margin-bottom: 8px;
 }
 
-/* Automatic article and project covers */
-.article-cover,
-.case-study-page .project-hero {
+/* Automatic article covers */
+.article-page .post-date {
+  margin-bottom: 10px;
+}
+
+.article-cover-frame {
+  margin: 0 0 26px;
+  padding: 18px;
+  border-radius: 8px;
+  background: var(--thumb-bg);
+  overflow: hidden;
+}
+
+.article-cover {
   display: block;
   width: 100%;
-  max-width: 720px;
+  max-width: 100%;
+  max-height: 420px;
   height: auto;
-  margin: 26px auto 34px;
+  margin: 0 auto;
   border-radius: 4px;
-  object-fit: cover;
-  background: var(--thumb-bg);
+  object-fit: contain;
+  background: transparent;
 }
 
-/* Home and archive thumbnails */
-.entry-row,
-.writing-item {
-  grid-template-columns: 150px 88px minmax(0, 1fr) 24px;
+/* Home cards: date and thumbnail stay together in the left column. */
+.entry-row {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 30px;
+  gap: 28px;
   align-items: start;
+  padding: 24px 10px;
 }
 
-.entry-row.entry-no-image,
-.writing-item.writing-no-image {
-  grid-template-columns: 105px minmax(0, 1fr) 30px;
+.entry-side {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.entry-side time {
+  display: block;
+  margin: 0 0 10px;
+  padding: 0;
+  color: var(--muted);
+  font: 12px/1.5 var(--mono);
 }
 
 .entry-thumb-link {
   display: block;
-  grid-column: 1;
+  width: 100%;
 }
 
 .entry-thumb {
   display: block;
-  width: 150px;
-  height: 96px;
+  width: 100%;
+  height: 118px;
   object-fit: cover;
   border-radius: 4px;
   background: var(--thumb-bg);
 }
 
-.entry-row > time,
-.writing-item > time {
+.entry-main {
   grid-column: 2;
+  min-width: 0;
+  padding-top: 1px;
 }
 
-.entry-row > div,
-.writing-item > div {
+.entry-main h2 {
+  margin-bottom: 8px;
+}
+
+.entry-row > .writing-arrow {
   grid-column: 3;
+  align-self: start;
+  justify-self: end;
+  margin-top: 2px;
 }
 
-.entry-row > .writing-arrow,
-.writing-item > .writing-arrow {
-  grid-column: 4;
+.entry-row.entry-no-image {
+  grid-template-columns: 105px minmax(0, 1fr) 30px;
 }
 
-.entry-row.entry-no-image > time,
-.writing-item.writing-no-image > time {
-  grid-column: 1;
+.entry-row.entry-no-image .entry-side time {
+  margin-bottom: 0;
 }
 
-.entry-row.entry-no-image > div,
-.writing-item.writing-no-image > div {
-  grid-column: 2;
-}
-
-.entry-row.entry-no-image > .writing-arrow,
-.writing-item.writing-no-image > .writing-arrow {
-  grid-column: 3;
+/* Writing cards outside the home keep their compact layout. */
+.writing-item {
+  grid-template-columns: 105px minmax(0, 1fr) 30px;
 }
 
 @media screen and (max-width: 700px) {
-  .entry-row,
-  .writing-item {
-    grid-template-columns: 110px minmax(0, 1fr) 24px;
-    gap: 14px;
+  .article-cover-frame {
+    padding: 12px;
+    margin-bottom: 22px;
   }
 
-  .entry-thumb-link {
-    grid-column: 1;
-    grid-row: 1 / span 2;
+  .article-cover {
+    max-height: 320px;
+  }
+
+  .entry-row {
+    grid-template-columns: 132px minmax(0, 1fr) 24px;
+    gap: 16px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .entry-thumb {
-    width: 110px;
-    height: 82px;
+    height: 92px;
   }
 
-  .entry-row > time,
-  .writing-item > time {
-    grid-column: 2;
-    grid-row: 1;
-    padding-top: 0;
-  }
-
-  .entry-row > div,
-  .writing-item > div {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .entry-row > .writing-arrow,
-  .writing-item > .writing-arrow {
-    grid-column: 3;
-    grid-row: 2;
-  }
-
-  .entry-row.entry-no-image,
-  .writing-item.writing-no-image {
+  .entry-row.entry-no-image {
     grid-template-columns: 85px minmax(0, 1fr) 24px;
   }
 }
 
 @media screen and (max-width: 460px) {
   .entry-row,
-  .writing-item,
-  .entry-row.entry-no-image,
-  .writing-item.writing-no-image {
-    grid-template-columns: 1fr 24px;
+  .entry-row.entry-no-image {
+    grid-template-columns: minmax(0, 1fr) 24px;
+    gap: 12px;
   }
 
-  .entry-thumb-link {
+  .entry-side {
     grid-column: 1 / -1;
-    grid-row: 1;
   }
 
   .entry-thumb {
@@ -163,27 +167,11 @@ hr {
     height: 180px;
   }
 
-  .entry-row > time,
-  .writing-item > time,
-  .entry-row.entry-no-image > time,
-  .writing-item.writing-no-image > time {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .entry-row > div,
-  .writing-item > div,
-  .entry-row.entry-no-image > div,
-  .writing-item.writing-no-image > div {
+  .entry-main {
     grid-column: 1;
-    grid-row: 3;
   }
 
-  .entry-row > .writing-arrow,
-  .writing-item > .writing-arrow,
-  .entry-row.entry-no-image > .writing-arrow,
-  .writing-item.writing-no-image > .writing-arrow {
+  .entry-row > .writing-arrow {
     grid-column: 2;
-    grid-row: 3;
   }
 }
