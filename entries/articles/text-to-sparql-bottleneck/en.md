@@ -8,11 +8,11 @@ permalink: /entries/text-to-sparql-bottleneck/
 date: 2026-06-22
 category: "Knowledge Graphs"
 read_time: 11
-image: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-thumbnail: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-cover: "/images/articles/text-to-sparql-bottleneck/pipeline.png"
-cover_alt: "Modular Text-to-SPARQL pipeline"
-thumbnail_alt: "Text-to-SPARQL pipeline preview"
+image: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+thumbnail: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+cover: "/images/articles/text-to-sparql-bottleneck/wikidata-problem.png"
+cover_alt: "Knowledge graph representation used in the Text-to-SPARQL project"
+thumbnail_alt: "Text-to-SPARQL knowledge graph preview"
 excerpt: "An ablation study on Text-to-SPARQL generation showed that reliable entity linking mattered far more than extra examples, schema hints or increasingly elaborate prompts."
 ---
 
@@ -28,9 +28,7 @@ The project uses questions from QALD-10 and asks a model to generate SPARQL for 
 
 ![The same question must be mapped to opaque Wikidata identifiers before SPARQL generation can work](/images/articles/text-to-sparql-bottleneck/wikidata-problem.png)
 
-The pipeline was designed as a set of independently configurable stages:
-
-![Modular Text-to-SPARQL pipeline with entity linking, schema retrieval, examples, prompt construction and generation](/images/articles/text-to-sparql-bottleneck/pipeline.png)
+The pipeline was designed as a set of independently configurable stages.
 
 I compared GPT-4o, GPT-4o-mini and Llama 3.3 70B while varying the linker, FAISS-retrieved few-shot examples, Wikidata property hints and prompting strategies such as decomposition and self-consistency.
 
