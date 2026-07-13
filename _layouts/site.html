@@ -18,7 +18,7 @@
   <meta property="og:image" content="{{ share_image | absolute_url }}">
   <meta name="twitter:image" content="{{ share_image | absolute_url }}">
   {% endif %}
-  {% include head-alternates.html current_lang=current_lang %}
+  {% unless page.no_alternates %}{% include head-alternates.html current_lang=current_lang %}{% endunless %}
   {% if site.analytics.plausible_domain and site.analytics.plausible_domain != '' %}
   <script defer data-domain="{{ site.analytics.plausible_domain }}" src="https://plausible.io/js/script.js"></script>
   {% endif %}
