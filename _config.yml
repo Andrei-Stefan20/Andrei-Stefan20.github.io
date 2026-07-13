@@ -1,0 +1,76 @@
+locale: "en-US"
+title: "Andrei Alexandru Stefan"
+description: "MSc in AI at the University of Bari and Full-Stack Developer"
+url: "https://andrei-stefan20.github.io"
+baseurl: ""
+repository: "Andrei-Stefan20/Andrei-Stefan20.github.io"
+timezone: "Europe/Rome"
+logo: "/images/profilo.jpg"
+
+template:
+  license_year: 2026
+  custom_domain: ""
+
+analytics:
+  plausible_domain: ""
+
+discussions:
+  enabled: false
+  repo: ""
+  repo_id: ""
+  category: "Announcements"
+  category_id: ""
+
+author:
+  name: "Andrei Alexandru Stefan"
+  role: "MSc in AI @ Uniba"
+  education: "Full-Stack Developer"
+  location: "Italy"
+  email: ""
+  avatar: "/images/profilo.jpg"
+  cv: ""
+  github: "https://github.com/Andrei-Stefan20"
+  linkedin: "https://www.linkedin.com/in/andre-alexandru-stefan"
+  scholar: ""
+  orcid: ""
+
+languages:
+  default: en
+  available:
+    - code: en
+      label: "EN"
+      home_url: "/"
+    - code: it
+      label: "IT"
+      home_url: "/it/"
+
+appearance:
+  accent_color: "#2b2b2b"
+  recent_items_on_home: 5
+  background_pattern: "grid"
+  theme_mode: "auto"
+  font_style: "default"
+
+layouts_dir: layouts
+includes_dir: includes
+data_dir: data
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - README.md
+  - CONTRIBUTING.md
+  - CODE_OF_CONDUCT.md
+  - SECURITY.md
+  - CNAME.example
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - content-templates
+  - layouts
+  - includes
+  - data
+  - entries/README.md
