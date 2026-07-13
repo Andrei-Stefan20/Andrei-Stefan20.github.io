@@ -34,7 +34,6 @@ hr {
   margin-bottom: 8px;
 }
 
-/* Automatic article covers */
 .article-page .post-date {
   margin-bottom: 10px;
 }
@@ -59,7 +58,6 @@ hr {
   background: transparent;
 }
 
-/* Home and Writing cards: date and thumbnail stay together. */
 .entry-row,
 .writing-item {
   display: grid;
