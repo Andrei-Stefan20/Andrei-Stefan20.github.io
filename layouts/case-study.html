@@ -7,6 +7,7 @@ layout: site
 {% assign has_code = page.code | default: '' | strip %}
 {% assign has_demo = page.demo | default: '' | strip %}
 {% assign has_paper = page.paper | default: '' | strip %}
+{% assign cover_image = page.cover | default: page.image %}
 <article class="content-page case-study-page">
   <header class="case-study-header">
     <p class="post-date">{{ t.content.case_study_label }} {{ page.year }}</p>
@@ -21,6 +22,9 @@ layout: site
       </div>
     {% endif %}
   </header>
+  {% if cover_image and cover_image != '' and page.show_cover != false %}
+    <img class="project-hero" src="{{ cover_image | relative_url }}" alt="{{ page.cover_alt | default: page.title }}">
+  {% endif %}
   <div class="article-content">{{ content }}</div>
   {% include comments.html %}
 </article>
