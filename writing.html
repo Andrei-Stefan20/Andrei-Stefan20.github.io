@@ -18,13 +18,13 @@ permalink: /writing/
 {% if articles.size > 0 %}
 <div class="writing-index">
   {% for article in articles %}
-  {% assign article_image = article.thumbnail | default: article.image | default: article.cover %}
+  {% assign article_image = article.cover | default: article.image | default: article.thumbnail %}
   <article class="writing-index-item{% unless article_image and article_image != '' %} writing-index-item-no-image{% endunless %}">
     <div class="writing-index-side">
       <time datetime="{{ article.date | date_to_xmlschema }}">{{ article.date | date: '%b %Y' }}</time>
       {% if article_image and article_image != '' %}
       <a class="writing-index-thumb-link" href="{{ article.url | relative_url }}">
-        <img class="writing-index-thumb" src="{{ article_image | relative_url }}" alt="{{ article.thumbnail_alt | default: article.cover_alt | default: article.title }}" loading="lazy">
+        <img class="writing-index-thumb" src="{{ article_image | relative_url }}" alt="{{ article.cover_alt | default: article.thumbnail_alt | default: article.title }}" loading="lazy">
       </a>
       {% endif %}
     </div>
@@ -48,8 +48,8 @@ permalink: /writing/
 .writing-index-item-no-image { grid-template-columns: 105px minmax(0, 1fr) 28px; }
 .writing-index-side { min-width: 0; }
 .writing-index-side time { display: block; margin-bottom: 10px; color: var(--muted); font: 12px/1.5 var(--mono); text-transform: uppercase; }
-.writing-index-thumb-link { display: block; width: 100%; overflow: hidden; border-radius: 4px; }
-.writing-index-thumb { display: block; width: 100%; height: 118px; object-fit: cover; border-radius: 4px; background: var(--thumb-bg); transition: opacity .2s ease; }
+.writing-index-thumb-link { display: block; width: 100%; overflow: hidden; border-radius: 4px; background: var(--thumb-bg); }
+.writing-index-thumb { display: block; width: 100%; height: 118px; object-fit: contain; border-radius: 4px; background: var(--thumb-bg); transition: opacity .2s ease; }
 .writing-index-thumb-link:hover .writing-index-thumb { opacity: .82; }
 .writing-index-main { min-width: 0; }
 .writing-index-main h2 { margin: 3px 0 8px; font-size: 21px; line-height: 1.3; }
