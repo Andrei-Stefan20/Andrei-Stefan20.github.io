@@ -46,8 +46,6 @@ L'ambiguità peggiora ulteriormente il problema. Una stessa espressione può ind
 
 Anche quando l'entità è corretta, la struttura del grafo può richiedere navigazione complessa. Date, ruoli e qualificatori usano statement reificati con prefissi come `p:`, `ps:` e `pq:`, non soltanto relazioni dirette `wdt:`.
 
-![La navigazione dei qualificatori in Wikidata richiede statement reificati](/images/articles/text-to-sparql-bottleneck/qualifiers.png)
-
 Il problema contiene quindi due task distinti:
 
 1. capire il significato della menzione;
@@ -58,8 +56,6 @@ Il prompting può aiutare con il primo punto. Non può risolvere in modo affidab
 ## Recuperare proprietà ed esempi
 
 Lo schema retrieval costruisce un indice FAISS su descrizioni arricchite delle proprietà, combinando etichette, alias e spiegazioni brevi. Durante l'esecuzione, la domanda e il contesto delle entità collegate vengono usati per recuperare PID candidati.
-
-![Property retrieval con FAISS su etichette, descrizioni e alias di Wikidata](/images/articles/text-to-sparql-bottleneck/property-retrieval.png)
 
 L'obiettivo era evitare che il modello dovesse indovinare le relazioni dalla memoria. Un'espressione come “member of Congress” dovrebbe recuperare `P39`, anche se l'etichetta ufficiale è “position held”.
 
