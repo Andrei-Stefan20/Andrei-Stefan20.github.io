@@ -7,7 +7,48 @@ lang: it
 {% assign current_lang = page.lang | default: site.languages.default %}
 {% assign t = site.data.locales[current_lang] %}
 {% assign articles = site.pages | where: 'lang', current_lang | where: 'type', 'article' | sort: 'date' | reverse %}
-<div class="page-heading"><div><h1 class="page-title">{{ t.writing.title }}</h1><p class="page-intro">{{ t.writing.intro }}</p></div><p class="page-count">{{ articles | size }} {{ t.writing.count_label }}</p></div>
+
+<div class="page-heading">
+  <div>
+    <h1 class="page-title">{{ t.writing.title }}</h1>
+    <p class="page-intro">{{ t.writing.intro }}</p>
+  </div>
+  <p class="page-count">{{ articles | size }} {{ t.writing.count_label }}</p>
+</div>
+
 {% if articles.size > 0 %}
-<div class="writing-list writing-page">{% for article in articles %}{% include writing-entry.html item=article %}{% endfor %}</div>
-{% else %}<p>{{ t.archive.empty }}</p>{% endif %}
+<div class="writing-index">
+  {% for article in articles %}
+  <article class="writing-index-item">
+    <time datetime="{{ article.date | date_to_xmlschema }}">{{ article.date | date: '%b %Y' }}</time>
+    <div class="writing-index-main">
+      <p class="writing-topic">{{ article.category | default: t.writing.default_category }}{% if article.read_time %} · {{ article.read_time }} {{ t.writing.read_suffix }}{% endif %}</p>
+      <h2><a href="{{ article.url | relative_url }}">{{ article.title }}</a></h2>
+      {% if article.excerpt %}<p class="writing-index-excerpt">{{ article.excerpt | strip_html | strip_newlines }}</p>{% endif %}
+    </div>
+    <a class="writing-index-arrow" href="{{ article.url | relative_url }}" aria-label="{{ t.content.read_aria_prefix }} {{ article.title }}">→</a>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p>{{ t.archive.empty }}</p>
+{% endif %}
+
+<style>
+.writing-index { width: 100%; margin-top: 8px; }
+.writing-index-item { display: grid; grid-template-columns: 105px minmax(0, 1fr) 28px; gap: 20px; align-items: start; padding: 24px 0; border-bottom: 1px solid var(--border); }
+.writing-index-item:first-child { border-top: 1px solid var(--border); }
+.writing-index-item time { padding-top: 4px; color: var(--muted); font: 12px/1.5 var(--mono); text-transform: uppercase; }
+.writing-index-main { min-width: 0; }
+.writing-index-main h2 { margin: 3px 0 8px; font-size: 21px; line-height: 1.3; }
+.writing-index-main h2 a { overflow-wrap: anywhere; }
+.writing-index-excerpt { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.writing-index-arrow { align-self: center; justify-self: end; color: var(--fg); font-size: 22px; line-height: 1; }
+@media (max-width: 600px) {
+  .writing-index-item { grid-template-columns: 1fr 24px; gap: 10px; padding: 20px 0; }
+  .writing-index-item time { grid-column: 1 / -1; padding: 0; margin-bottom: -2px; }
+  .writing-index-main { grid-column: 1; }
+  .writing-index-arrow { grid-column: 2; grid-row: 2; }
+  .writing-index-main h2 { font-size: 19px; }
+}
+</style>
