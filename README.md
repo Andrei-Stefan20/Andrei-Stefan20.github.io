@@ -11,7 +11,7 @@
 
 <br>
 
-<img src="docs/readme/portfolio-tour.gif" alt="Animated preview of the portfolio interface" width="100%">
+<img src="docs/readme/portfolio-tour.svg" alt="Animated preview of the portfolio interface" width="100%">
 
 </div>
 
@@ -35,10 +35,10 @@ The site is intentionally lightweight: Jekyll generates the pages, GitHub Action
 <table>
 <tr>
 <td width="50%">
-<img src="docs/readme/portfolio-light.png" alt="Portfolio home page in light mode">
+<img src="docs/readme/portfolio-light.svg" alt="Portfolio home page in light mode">
 </td>
 <td width="50%">
-<img src="docs/readme/portfolio-dark.png" alt="Portfolio home page in dark mode">
+<img src="docs/readme/portfolio-dark.svg" alt="Portfolio home page in dark mode">
 </td>
 </tr>
 <tr>
@@ -47,7 +47,7 @@ The site is intentionally lightweight: Jekyll generates the pages, GitHub Action
 </tr>
 </table>
 
-<img src="docs/readme/portfolio-archive.png" alt="Searchable project and article archive" width="100%">
+<img src="docs/readme/portfolio-archive.svg" alt="Searchable project and article archive" width="100%">
 
 The archive combines all published content in one place and supports filtering by content type, category, tag, and technology.
 
