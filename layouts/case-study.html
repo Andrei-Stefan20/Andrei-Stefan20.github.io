@@ -11,11 +11,11 @@ layout: site
     {% if page.excerpt %}<p class="page-intro">{{ page.excerpt }}</p>{% endif %}
     {% if page.technologies %}<p class="item-tags">{{ page.technologies | join: ', ' }}</p>{% endif %}
     {% if page.code or page.demo or page.paper %}
-      <p class="case-study-links">
-        {% if page.code %}<a href="{{ page.code }}" target="_blank" rel="noopener">View source ↗</a>{% endif %}
-        {% if page.demo %}<a href="{{ page.demo }}" target="_blank" rel="noopener">Live demo ↗</a>{% endif %}
-        {% if page.paper %}<a href="{{ page.paper }}" target="_blank" rel="noopener">Read paper ↗</a>{% endif %}
-      </p>
+      <div class="case-study-actions">
+        {% if page.code %}<a class="case-study-button primary" href="{{ page.code }}" target="_blank" rel="noopener">View source ↗</a>{% endif %}
+        {% if page.demo %}<a class="case-study-button" href="{{ page.demo }}" target="_blank" rel="noopener">Live demo ↗</a>{% endif %}
+        {% if page.paper %}<a class="case-study-button" href="{{ page.paper }}" target="_blank" rel="noopener">Read paper ↗</a>{% endif %}
+      </div>
     {% endif %}
   </header>
   <div class="article-content">{{ content }}</div>
