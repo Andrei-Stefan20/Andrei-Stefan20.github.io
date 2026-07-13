@@ -2,7 +2,7 @@
 {% assign t = site.data.locales[current_lang] %}
 {% assign entry_image = include.item.thumbnail | default: include.item.image | default: include.item.cover %}
 <article class="entry-row entry-{{ include.item.type }}{% unless entry_image and entry_image != '' %} entry-no-image{% endunless %}">
-  <div class="entry-media">
+  <div class="entry-side">
     <time datetime="{{ include.item.date | date_to_xmlschema }}">{{ include.item.date | date: '%b %Y' }}</time>
     {% if entry_image and entry_image != '' %}
       <a class="entry-thumb-link" href="{{ include.item.url | relative_url }}">
@@ -10,7 +10,7 @@
       </a>
     {% endif %}
   </div>
-  <div class="entry-copy">
+  <div class="entry-main">
     <p class="writing-topic">{% if include.item.type == 'project' %}{{ t.work.project_label }}{% if include.item.role %} {{ include.item.role }}{% endif %}{% else %}{{ include.item.category | default: t.writing.default_category }}{% if include.item.read_time %} {{ include.item.read_time }} {{ t.writing.read_suffix }}{% endif %}{% endif %}</p>
     <h2><a href="{{ include.item.url | relative_url }}">{{ include.item.title }}</a></h2>
     <p>{{ include.item.excerpt | strip_html | strip_newlines }}</p>
