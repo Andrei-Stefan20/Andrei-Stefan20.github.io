@@ -128,7 +128,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
 .writing-item, .entry-row { display: grid; grid-template-columns: 105px minmax(0, 1fr) 30px; gap: 22px; align-items: start; padding: 22px 10px; border-bottom: 1px solid var(--border); }
 .writing-item.writing-with-image { grid-template-columns: 112px 92px minmax(0, 1fr) 30px; }
 .writing-item .entry-thumb-link { grid-column: 1; }
-.writing-item .entry-thumb { width: 112px; height: 76px; object-fit: cover; border-radius: 3px; background: var(--thumb-bg); }
+.writing-item .entry-thumb, .entry-row .entry-thumb { width: 112px; height: 76px; object-fit: cover; border-radius: 3px; background: var(--thumb-bg); }
 .writing-item.writing-with-image time { grid-column: 2; }
 .writing-item.writing-with-image > div { grid-column: 3; min-width: 0; }
 .writing-item.writing-with-image > .writing-arrow { grid-column: 4; }
@@ -200,7 +200,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; text-de
   .item-thumb { width: 125px; height: 90px; }
   .writing-item, .entry-row { grid-template-columns: 85px minmax(0, 1fr) 24px; gap: 12px; padding-left: 0; padding-right: 0; }
   .writing-item.writing-with-image { grid-template-columns: 96px 74px minmax(0, 1fr) 24px; }
-  .writing-item .entry-thumb { width: 96px; height: 68px; }
+  .writing-item .entry-thumb, .entry-row .entry-thumb { width: 96px; height: 68px; }
 }
 
 @media screen and (max-width: 460px) {

@@ -61,9 +61,21 @@ writing:
 
 archive:
   title: "Archivio"
-  intro: "Tutti i progetti e gli articoli, raccolti in un unico posto."
+  intro: "Tutti i contenuti pubblicati, organizzati in un unico spazio consultabile."
   empty: "Non ci sono ancora contenuti pubblicati."
   article_label: "Articolo"
+  entries_label: "CONTENUTI"
+  search_label: "Cerca"
+  search_placeholder: "Cerca per titolo, tipo, argomento o tecnologia…"
+  type_label: "Tipo di contenuto"
+  tag_label: "Tag"
+  all_label: "Tutti"
+  all_tags_label: "Tutti i tag"
+  clear_label: "Azzera filtri"
+  no_match: "Nessun contenuto corrisponde ai filtri selezionati."
+  open_label: "Apri"
+  active_prefix: "Attivo:"
+  active_all: "tutti i contenuti"
 
 search:
   title: "Cerca"

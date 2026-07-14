@@ -61,9 +61,21 @@ writing:
 
 archive:
   title: "Article archive"
-  intro: "All articles in reverse chronological order."
+  intro: "All published content, organized in one place you can browse."
   empty: "No articles published yet."
   article_label: "Article"
+  entries_label: "ENTRIES"
+  search_label: "Search"
+  search_placeholder: "Search by title, type, topic or technology…"
+  type_label: "Content type"
+  tag_label: "Tags"
+  all_label: "All"
+  all_tags_label: "All tags"
+  clear_label: "Clear filters"
+  no_match: "No content matches the selected filters."
+  open_label: "Open"
+  active_prefix: "Active:"
+  active_all: "all content"
 
 search:
   title: "Search"

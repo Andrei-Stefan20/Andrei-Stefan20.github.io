@@ -143,7 +143,7 @@ excerpt: "A short abstract used in lists and social previews."
 
 ## Appearance configuration
 
-Most visual options are controlled from `config.yml`.
+Most visual options are controlled from `_config.yml`.
 
 ```yaml
 appearance:
@@ -160,7 +160,7 @@ Available background values are `none`, `grid`, and `dots`. The automatic theme 
 
 ```bash
 bundle install
-bundle exec jekyll serve --config config.yml
+bundle exec jekyll serve
 ```
 
 Open `http://localhost:4000`.
@@ -168,7 +168,7 @@ Open `http://localhost:4000`.
 To test the production search index locally:
 
 ```bash
-bundle exec jekyll build --config config.yml
+bundle exec jekyll build
 npx pagefind --site _site
 cd _site && python3 -m http.server 4000
 ```
@@ -193,12 +193,12 @@ The live version is available at **[andrei-stefan20.github.io](https://andrei-st
 
 | Purpose | Path |
 |---|---|
-| Site configuration | `config.yml` |
-| Localised text | `data/locales/` |
+| Site configuration | `_config.yml` |
+| Localised text | `_data/locales/` |
 | Projects | `entries/projects/` |
 | Articles | `entries/articles/` |
-| Reusable components | `includes/` |
-| Page layouts | `layouts/` |
+| Reusable components | `_includes/` |
+| Page layouts | `_layouts/` |
 | Styling | `css/` |
 | Client-side behaviour | `js/` |
 | GitHub Pages workflow | `.github/workflows/pages.yml` |

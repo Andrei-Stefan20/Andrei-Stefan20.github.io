@@ -4,7 +4,7 @@ This repository can be reused as a personal portfolio without changing the layou
 
 ## 1. Identity and deployment
 
-Edit `config.yml` first:
+Edit `_config.yml` first:
 
 - `title`, `description`, `url`, `baseurl`, and `repository`;
 - the fields under `author`;
@@ -18,11 +18,11 @@ For a user site such as `username.github.io`, keep `baseurl` empty. For a projec
 All interface labels and biography copy live in:
 
 ```text
-data/locales/en.yml
-data/locales/it.yml
+_data/locales/en.yml
+_data/locales/it.yml
 ```
 
-Add another locale file when introducing a language, then register it under `languages.available` in `config.yml`.
+Add another locale file when introducing a language, then register it under `languages.available` in `_config.yml`.
 
 ## 3. Content
 
@@ -52,7 +52,7 @@ Run these commands before publishing:
 
 ```bash
 ruby scripts/validate_site.rb
-bundle exec jekyll build --config config.yml
+bundle exec jekyll build
 ```
 
 The validator checks required configuration, front matter, supported languages, duplicate entries, permalinks, and referenced local images.
@@ -62,12 +62,12 @@ The validator checks required configuration, front matter, supported languages, 
 The main layout is intentionally small. Shared responsibilities live in dedicated includes:
 
 ```text
-includes/head-preferences.html
-includes/head-alternates.html
-includes/site-assets.html
-includes/site-header.html
-includes/site-footer.html
-includes/site-scripts.html
+_includes/head-preferences.html
+_includes/head-alternates.html
+_includes/site-assets.html
+_includes/site-header.html
+_includes/site-footer.html
+_includes/site-scripts.html
 ```
 
 Content cards and archive rendering are also reusable includes. Prefer extending an existing include instead of duplicating markup in language-specific pages.
